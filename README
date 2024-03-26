@@ -1,0 +1,24 @@
+Usage:
+
+Empty lines and lines starting with '#' are ignored.
+
+All labels start with '@'. For example:
+@infinite_loop
+jmp @infinite_loop
+
+'@_$DATA' refers to the address of the data segment. For example:
+mov @_$DATA+40,%eax
+
+Supported pseudo-ops are:
+.entry -- specify the program entry
+.cui -- compile this program as a CUI application
+.string -- define a C-style string constant
+.datasize -- specify the size of the data segment
+.byte -- define a 1-byte constant
+.word -- define a 2-byte constant
+.long -- define a 4-byte constant
+.quad -- define an 8-byte constant
+.align -- pad to a specific alignment
+.dllcall -- call a function in a DLL
+
+Many x86_64 instructions are not supported.
