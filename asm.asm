@@ -181,6 +181,7 @@
 .string "movl "
 .string "movw "
 .string "movb "
+.string "movd "
 .string "jmp "
 .string "call "
 .string "ret"
@@ -297,6 +298,34 @@
 .string "movswl "
 .string "movswq "
 .string "movslq "
+.string "movups "
+.string "movss "
+.string "movsd "
+.string "addss "
+.string "addsd "
+.string "subss "
+.string "subsd "
+.string "mulss "
+.string "mulsd "
+.string "divss "
+.string "divsd "
+.string "comiss "
+.string "comisd "
+.string "addps "
+.string "addpd "
+.string "subps "
+.string "subpd "
+.string "mulps "
+.string "mulpd "
+.string "divps "
+.string "divpd "
+.string "shufps "
+.string "cvtss2sd "
+.string "cvtsd2ss "
+.string "cvtsi2ss "
+.string "cvtsi2sd "
+.string "cvtss2si "
+.string "cvtsd2si "
 .byte 0
 
 # meaning of instruction format
@@ -337,9 +366,15 @@
 .string "ADDR,%RB2:0::0:0x8a s|A "
 # movq
 .string "$IMM,ADDR:0::1:0xc7 A k "
+.string "%RQ1,%RX2:0:0x66 :1:0x0f 0x6e 0xc0|R|s "
+.string "%RX2,%RQ1:0:0x66 :1:0x0f 0x7e 0xc0|R|s "
+# movw
 .string "$IMM,ADDR:0::0:0xc7 A k "
 .string "$IMM,ADDR:0:0x66 :0:0xc7 A j "
 .string "$IMM,ADDR:0::0:0xc6 A i "
+# movd
+.string "%RL1,%RX2:0:0x66 :0:0x0f 0x6e 0xc0|R|s "
+.string "%RX2,%RL1:0:0x66 :0:0x0f 0x7e 0xc0|R|s "
 # jmp
 .string "IMM:2::0:0xeb o "
 .string "IMM:0::0:0xe9 O "
@@ -700,16 +735,110 @@
 .string "ADDR,%RW2:0:0x66 :0:0x8d s|A "
 # movx
 .string "%RB1,%RW2:0:0x66 :0:0x0f 0xb6 0xc0|R|s "
+.string "ADDR,%RW2:0:0x66 :0:0x0f 0xb6 s|A "
 .string "%RB1,%RL2:0::0:0x0f 0xb6 0xc0|R|s "
+.string "ADDR,%RL2:0::0:0x0f 0xb6 s|A "
 .string "%RB1,%RQ2:0::1:0x0f 0xb6 0xc0|R|s "
+.string "ADDR,%RQ2:0::1:0x0f 0xb6 s|A "
 .string "%RW1,%RL2:0::0:0x0f 0xb7 0xc0|R|s "
+.string "ADDR,%RL2:0::0:0x0f 0xb7 s|A "
 .string "%RW1,%RQ2:0::1:0x0f 0xb7 0xc0|R|s "
+.string "ADDR,%RQ2:0::1:0x0f 0xb7 s|A "
 .string "%RB1,%RW2:0:0x66 :0:0x0f 0xbe 0xc0|R|s "
+.string "ADDR,%RW2:0:0x66 :0:0x0f 0xbe s|A "
 .string "%RB1,%RL2:0::0:0x0f 0xbe 0xc0|R|s "
+.string "ADDR,%RL2:0::0:0x0f 0xbe s|A "
 .string "%RB1,%RQ2:0::1:0x0f 0xbe 0xc0|R|s "
+.string "ADDR,%RQ2:0::1:0x0f 0xbe s|A "
 .string "%RW1,%RL2:0::0:0x0f 0xbf 0xc0|R|s "
+.string "ADDR,%RL2:0::0:0x0f 0xbf s|A "
 .string "%RW1,%RQ2:0::1:0x0f 0xbf 0xc0|R|s "
+.string "ADDR,%RQ2:0::1:0x0f 0xbf s|A "
 .string "%RL1,%RQ2:0::1:0x63 0xc0|R|s "
+.string "ADDR,%RQ2:0::1:0x63 s|A "
+# movups
+.string "%RX1,%RX2:0::0:0x0f 0x10 0xc0|R|s "
+.string "ADDR,%RX2:0::0:0x0f 0x10 s|A "
+.string "%RX2,ADDR:0::0:0x0f 0x11 s|A "
+# movss
+.string "%RX1,%RX2:0:0xf3 :0:0x0f 0x10 0xc0|R|s "
+.string "ADDR,%RX2:0:0xf3 :0:0x0f 0x10 s|A "
+.string "%RX2,ADDR:0:0xf3 :0:0x0f 0x11 s|A "
+# movsd
+.string "%RX1,%RX2:0:0xf2 :0:0x0f 0x10 0xc0|R|s "
+.string "ADDR,%RX2:0:0xf2 :0:0x0f 0x10 s|A "
+.string "%RX2,ADDR:0:0xf2 :0:0x0f 0x11 s|A "
+# addss
+.string "%RX1,%RX2:0:0xf3 :0:0x0f 0x58 0xc0|R|s "
+.string "ADDR,%RX2:0:0xf3 :0:0x0f 0x58 s|A "
+# addsd
+.string "%RX1,%RX2:0:0xf2 :0:0x0f 0x58 0xc0|R|s "
+.string "ADDR,%RX2:0:0xf2 :0:0x0f 0x58 s|A "
+# subss
+.string "%RX1,%RX2:0:0xf3 :0:0x0f 0x5c 0xc0|R|s "
+.string "ADDR,%RX2:0:0xf3 :0:0x0f 0x5c s|A "
+# subsd
+.string "%RX1,%RX2:0:0xf2 :0:0x0f 0x5c 0xc0|R|s "
+.string "ADDR,%RX2:0:0xf2 :0:0x0f 0x5c s|A "
+# mulss
+.string "%RX1,%RX2:0:0xf3 :0:0x0f 0x59 0xc0|R|s "
+.string "ADDR,%RX2:0:0xf3 :0:0x0f 0x59 s|A "
+# mulsd
+.string "%RX1,%RX2:0:0xf2 :0:0x0f 0x59 0xc0|R|s "
+.string "ADDR,%RX2:0:0xf2 :0:0x0f 0x59 s|A "
+# divss
+.string "%RX1,%RX2:0:0xf3 :0:0x0f 0x5e 0xc0|R|s "
+.string "ADDR,%RX2:0:0xf3 :0:0x0f 0x5e s|A "
+# divsd
+.string "%RX1,%RX2:0:0xf2 :0:0x0f 0x5e 0xc0|R|s "
+.string "ADDR,%RX2:0:0xf2 :0:0x0f 0x5e s|A "
+# comiss
+.string "%RX1,%RX2:0::0:0x0f 0x2f 0xc0|R|s "
+# comisd
+.string "%RX1,%RX2:0:0x66 :0:0x0f 0x2f 0xc0|R|s "
+# addps
+.string "%RX1,%RX2:0::0:0x0f 0x58 0xc0|R|s "
+.string "ADDR,%RX2:0::0:0x0f 0x58 s|A "
+# addpd
+.string "%RX1,%RX2:0:0x66 :0:0x0f 0x58 0xc0|R|s "
+.string "ADDR,%RX2:0:0x66 :0:0x0f 0x58 s|A "
+# subps
+.string "%RX1,%RX2:0::0:0x0f 0x5c 0xc0|R|s "
+.string "ADDR,%RX2:0::0:0x0f 0x5c s|A "
+# subpd
+.string "%RX1,%RX2:0:0x66 :0:0x0f 0x5c 0xc0|R|s "
+.string "ADDR,%RX2:0:0x66 :0:0x0f 0x5c s|A "
+# mulps
+.string "%RX1,%RX2:0::0:0x0f 0x59 0xc0|R|s "
+.string "ADDR,%RX2:0::0:0x0f 0x59 s|A "
+# mulpd
+.string "%RX1,%RX2:0:0x66 :0:0x0f 0x59 0xc0|R|s "
+.string "ADDR,%RX2:0:0x66 :0:0x0f 0x59 s|A "
+# divps
+.string "%RX1,%RX2:0::0:0x0f 0x5e 0xc0|R|s "
+.string "ADDR,%RX2:0::0:0x0f 0x5e s|A "
+# divpd
+.string "%RX1,%RX2:0:0x66 :0:0x0f 0x5e 0xc0|R|s "
+.string "ADDR,%RX2:0:0x66 :0:0x0f 0x5e s|A "
+# shufps
+.string "$IMM,%RX1,%RX2:0::0:0x0f 0xc6 0xc0|R|s i "
+# cvtss2sd
+.string "%RX1,%RX2:0:0xf3 :0:0x0f 0x5a 0xc0|R|s "
+# cvtsd2ss
+.string "%RX1,%RX2:0:0xf2 :0:0x0f 0x5a 0xc0|R|s "
+# cvtsi2ss
+.string "%RL1,%RX2:0:0xf3 :0:0x0f 0x2a 0xc0|R|s "
+.string "%RQ1,%RX2:0:0xf3 :1:0x0f 0x2a 0xc0|R|s "
+# cvtsi2sd
+.string "%RL1,%RX2:0:0xf2 :0:0x0f 0x2a 0xc0|R|s "
+.string "%RQ1,%RX2:0:0xf2 :1:0x0f 0x2a 0xc0|R|s "
+# cvtss2si
+.string "%RX1,%RL2:0:0xf3 :0:0x0f 0x2d 0xc0|R|s "
+.string "%RX1,%RQ2:0:0xf3 :1:0x0f 0x2d 0xc0|R|s "
+# cvtsd2si
+.string "%RX1,%RL2:0:0xf2 :0:0x0f 0x2d 0xc0|R|s "
+.string "%RX1,%RQ2:0:0xf2 :1:0x0f 0x2d 0xc0|R|s "
+
 .byte 0
 
 .align 2
@@ -720,10 +849,13 @@
 .long 1
 .long 16
 # movq
+.long 3
+# movw
 .long 1
 .long 1
 .long 1
-.long 1
+# movd
+.long 2
 # jmp
 .long 4
 # call
@@ -861,17 +993,73 @@
 # lea
 .long 3
 # movx
+.long 2
+.long 2
+.long 2
+.long 2
+.long 2
+.long 2
+.long 2
+.long 2
+.long 2
+.long 2
+.long 2
+# movups
+.long 3
+# movss
+.long 3
+# movsd
+.long 3
+# addss
+.long 2
+# addsd
+.long 2
+# subss
+.long 2
+# subsd
+.long 2
+# mulss
+.long 2
+# mulsd
+.long 2
+# divss
+.long 2
+# divsd
+.long 2
+# comiss
 .long 1
+# comisd
 .long 1
+# addps
+.long 2
+# addpd
+.long 2
+# subps
+.long 2
+# subpd
+.long 2
+# mulps
+.long 2
+# mulpd
+.long 2
+# divps
+.long 2
+# divpd
+.long 2
+# shufps
 .long 1
+# cvtss2sd
 .long 1
+# cvtsd2ss
 .long 1
-.long 1
-.long 1
-.long 1
-.long 1
-.long 1
-.long 1
+# cvtsi2ss
+.long 2
+# cvtsi2sd
+.long 2
+# cvtss2si
+.long 2
+# cvtsd2si
+.long 2
 
 @dllcall_emit
 .byte 0xb8,0x00,0x00,0x00,0x00,0xff,0x10
@@ -1633,7 +1821,7 @@ call @string_array_get_index
 cmp $0,%eax
 jl @get_regxmm_end2
 cmp $6,%eax
-jb @get_regxmm_end
+jae @get_regxmm_end
 add $16,%eax
 @get_regxmm_end
 sub $6,%eax
@@ -3331,7 +3519,7 @@ mov $2,%ecx
 call @image_fill_zeros
 mov 40(%r12),%rcx
 mov (%rcx),%rdx
-add $8,%ecx
+add $8,%rcx
 inc %rdx
 call @write_image
 @image_write_rdata_dllwritten
