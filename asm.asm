@@ -333,8 +333,10 @@
 # ENCODING can be:
 # a number
 # i -- IMM8
+# I -- IMM8 (signed 64-bit)
 # j -- IMM16
 # k -- IMM32
+# K -- IMM32 (signed 64-bit)
 # l -- IMM64
 # A -- address
 # R -- reg1
@@ -342,502 +344,504 @@
 # s -- reg2<<3
 # O, o -- used in JMP and CALL instructions
 @ins_operands
-.string "$IMM:1::0:0x6a i "
-.string "$IMM:0::0:0x68 k "
-.string "ADDR:0::0:0xff 0x30|A "
-.string "%RQ1:0::0:0x50|R "
-.string "ADDR:0::0:0x8f 0x00|A "
-.string "%RQ1:0::0:0x58|R "
-.string "$IMM,%RQ1:0::1:0xb8|R l "
-.string "$IMM,%RL1:0::0:0xb8|R k "
-.string "$IMM,%RW1:0:0x66 :0:0xb8|R j "
-.string "$IMM,%RB1:0::0:0xb0|R i "
-.string "%RQ2,%RQ1:0::1:0x89 0xc0|R|s "
-.string "%RL2,%RL1:0::0:0x89 0xc0|R|s "
-.string "%RW2,%RW1:0:0x66 :0:0x89 0xc0|R|s "
-.string "%RB2,%RB1:0::0:0x88 0xc0|R|s "
-.string "%RQ2,ADDR:0::1:0x89 s|A "
-.string "%RL2,ADDR:0::0:0x89 s|A "
-.string "%RW2,ADDR:0:0x66 :0:0x89 s|A "
-.string "%RB2,ADDR:0::0:0x88 s|A "
-.string "ADDR,%RQ2:0::1:0x8b s|A "
-.string "ADDR,%RL2:0::0:0x8b s|A "
-.string "ADDR,%RW2:0:0x66 :0:0x8b s|A "
-.string "ADDR,%RB2:0::0:0x8a s|A "
+.string "$IMM::0:0x6a I "
+.string "$IMM::0:0x68 K "
+.string "ADDR::0:0xff 0x30|A "
+.string "%RQ1::0:0x50|R "
+.string "ADDR::0:0x8f 0x00|A "
+.string "%RQ1::0:0x58|R "
+.string "$IMM,%RQ1::1:0xc7 0xc0|R K "
+.string "$IMM,%RQ1::0:0xb8|R k "
+.string "$IMM,%RQ1::1:0xb8|R l "
+.string "$IMM,%RL1::0:0xb8|R k "
+.string "$IMM,%RW1:0x66 :0:0xb8|R j "
+.string "$IMM,%RB1::0:0xb0|R i "
+.string "%RQ2,%RQ1::1:0x89 0xc0|R|s "
+.string "%RL2,%RL1::0:0x89 0xc0|R|s "
+.string "%RW2,%RW1:0x66 :0:0x89 0xc0|R|s "
+.string "%RB2,%RB1::0:0x88 0xc0|R|s "
+.string "%RQ2,ADDR::1:0x89 s|A "
+.string "%RL2,ADDR::0:0x89 s|A "
+.string "%RW2,ADDR:0x66 :0:0x89 s|A "
+.string "%RB2,ADDR::0:0x88 s|A "
+.string "ADDR,%RQ2::1:0x8b s|A "
+.string "ADDR,%RL2::0:0x8b s|A "
+.string "ADDR,%RW2:0x66 :0:0x8b s|A "
+.string "ADDR,%RB2::0:0x8a s|A "
 # movq
-.string "$IMM,ADDR:0::1:0xc7 A k "
-.string "%RQ1,%RX2:0:0x66 :1:0x0f 0x6e 0xc0|R|s "
-.string "%RX2,%RQ1:0:0x66 :1:0x0f 0x7e 0xc0|R|s "
+.string "$IMM,ADDR::1:0xc7 A k "
+.string "%RQ1,%RX2:0x66 :1:0x0f 0x6e 0xc0|R|s "
+.string "%RX2,%RQ1:0x66 :1:0x0f 0x7e 0xc0|R|s "
 # movw
-.string "$IMM,ADDR:0::0:0xc7 A k "
-.string "$IMM,ADDR:0:0x66 :0:0xc7 A j "
-.string "$IMM,ADDR:0::0:0xc6 A i "
+.string "$IMM,ADDR::0:0xc7 A k "
+.string "$IMM,ADDR:0x66 :0:0xc7 A j "
+.string "$IMM,ADDR::0:0xc6 A i "
 # movd
-.string "%RL1,%RX2:0:0x66 :0:0x0f 0x6e 0xc0|R|s "
-.string "%RX2,%RL1:0:0x66 :0:0x0f 0x7e 0xc0|R|s "
+.string "%RL1,%RX2:0x66 :0:0x0f 0x6e 0xc0|R|s "
+.string "%RX2,%RL1:0x66 :0:0x0f 0x7e 0xc0|R|s "
 # jmp
-.string "IMM:2::0:0xeb o "
-.string "IMM:0::0:0xe9 O "
-.string "*%RQ1:0::0:0xff 0xe0|R "
-.string "*ADDR:0::0:0xff 0x20|A "
+.string "IMM::0:0xeb o "
+.string "IMM::0:0xe9 O "
+.string "*%RQ1::0:0xff 0xe0|R "
+.string "*ADDR::0:0xff 0x20|A "
 # call
-.string "IMM:0::0:0xe8 O "
-.string "*%RQ1:0::0:0xff 0xd0|R "
-.string "*ADDR:0::0:0xff 0x10|A "
+.string "IMM::0:0xe8 O "
+.string "*%RQ1::0:0xff 0xd0|R "
+.string "*ADDR::0:0xff 0x10|A "
 # ret
-.string ":0::0:0xc3 "
+.string "::0:0xc3 "
 # jC
-.string "IMM:2::0:0x74 o "
-.string "IMM:0::0:0x0f 0x84 O "
-.string "IMM:2::0:0x75 o "
-.string "IMM:0::0:0x0f 0x85 O "
-.string "IMM:2::0:0x77 o "
-.string "IMM:0::0:0x0f 0x87 O "
-.string "IMM:2::0:0x73 o "
-.string "IMM:0::0:0x0f 0x83 O "
-.string "IMM:2::0:0x72 o "
-.string "IMM:0::0:0x0f 0x82 O "
-.string "IMM:2::0:0x76 o "
-.string "IMM:0::0:0x0f 0x86 O "
-.string "IMM:2::0:0x7f o "
-.string "IMM:0::0:0x0f 0x8f O "
-.string "IMM:2::0:0x7d o "
-.string "IMM:0::0:0x0f 0x8d O "
-.string "IMM:2::0:0x7c o "
-.string "IMM:0::0:0x0f 0x8c O "
-.string "IMM:2::0:0x7e o "
-.string "IMM:0::0:0x0f 0x8e O "
+.string "IMM::0:0x74 o "
+.string "IMM::0:0x0f 0x84 O "
+.string "IMM::0:0x75 o "
+.string "IMM::0:0x0f 0x85 O "
+.string "IMM::0:0x77 o "
+.string "IMM::0:0x0f 0x87 O "
+.string "IMM::0:0x73 o "
+.string "IMM::0:0x0f 0x83 O "
+.string "IMM::0:0x72 o "
+.string "IMM::0:0x0f 0x82 O "
+.string "IMM::0:0x76 o "
+.string "IMM::0:0x0f 0x86 O "
+.string "IMM::0:0x7f o "
+.string "IMM::0:0x0f 0x8f O "
+.string "IMM::0:0x7d o "
+.string "IMM::0:0x0f 0x8d O "
+.string "IMM::0:0x7c o "
+.string "IMM::0:0x0f 0x8c O "
+.string "IMM::0:0x7e o "
+.string "IMM::0:0x0f 0x8e O "
 # cmp
-.string "%RQ2,%RQ1:0::1:0x39 0xc0|R|s "
-.string "%RL2,%RL1:0::0:0x39 0xc0|R|s "
-.string "%RW2,%RW1:0:0x66 :0:0x39 0xc0|R|s "
-.string "%RB2,%RB1:0::0:0x38 0xc0|R|s "
-.string "%RQ2,ADDR:0::1:0x39 s|A "
-.string "%RL2,ADDR:0::0:0x39 s|A "
-.string "%RW2,ADDR:0:0x66 :0:0x39 s|A "
-.string "%RB2,ADDR:0::0:0x38 s|A "
-.string "ADDR,%RQ2:0::1:0x3b s|A "
-.string "ADDR,%RL2:0::0:0x3b s|A "
-.string "ADDR,%RW2:0:0x66 :0:0x3b s|A "
-.string "ADDR,%RB2:0::0:0x3a s|A "
-.string "$IMM,%RQ1:1::1:0x83 0xf8|R i "
-.string "$IMM,%RQ1:0::1:0x81 0xf8|R k "
-.string "$IMM,%RL1:1::0:0x83 0xf8|R i "
-.string "$IMM,%RL1:0::0:0x81 0xf8|R k "
-.string "$IMM,%RW1:1:0x66 :0:0x83 0xf8|R i "
-.string "$IMM,%RW1:0:0x66 :0:0x81 0xf8|R j "
-.string "$IMM,%RB1:0::0:0x80 0xf8|R i "
+.string "%RQ2,%RQ1::1:0x39 0xc0|R|s "
+.string "%RL2,%RL1::0:0x39 0xc0|R|s "
+.string "%RW2,%RW1:0x66 :0:0x39 0xc0|R|s "
+.string "%RB2,%RB1::0:0x38 0xc0|R|s "
+.string "%RQ2,ADDR::1:0x39 s|A "
+.string "%RL2,ADDR::0:0x39 s|A "
+.string "%RW2,ADDR:0x66 :0:0x39 s|A "
+.string "%RB2,ADDR::0:0x38 s|A "
+.string "ADDR,%RQ2::1:0x3b s|A "
+.string "ADDR,%RL2::0:0x3b s|A "
+.string "ADDR,%RW2:0x66 :0:0x3b s|A "
+.string "ADDR,%RB2::0:0x3a s|A "
+.string "$IMM,%RQ1::1:0x83 0xf8|R I "
+.string "$IMM,%RQ1::1:0x81 0xf8|R K "
+.string "$IMM,%RL1::0:0x83 0xf8|R I "
+.string "$IMM,%RL1::0:0x81 0xf8|R k "
+.string "$IMM,%RW1:0x66 :0:0x83 0xf8|R I "
+.string "$IMM,%RW1:0x66 :0:0x81 0xf8|R j "
+.string "$IMM,%RB1::0:0x80 0xf8|R i "
 # cmpq
-.string "$IMM,ADDR:1::1:0x83 0x38|A i "
-.string "$IMM,ADDR:0::1:0x81 0x38|A k "
-.string "$IMM,ADDR:1::0:0x83 0x38|A i "
-.string "$IMM,ADDR:0::0:0x81 0x38|A k "
-.string "$IMM,ADDR:1:0x66 :0:0x83 0x38|A i "
-.string "$IMM,ADDR:0:0x66 :0:0x81 0x38|A j "
-.string "$IMM,ADDR:0::0:0x80 0x38|A i "
+.string "$IMM,ADDR::1:0x83 0x38|A I "
+.string "$IMM,ADDR::1:0x81 0x38|A K "
+.string "$IMM,ADDR::0:0x83 0x38|A I "
+.string "$IMM,ADDR::0:0x81 0x38|A k "
+.string "$IMM,ADDR:0x66 :0:0x83 0x38|A I "
+.string "$IMM,ADDR:0x66 :0:0x81 0x38|A j "
+.string "$IMM,ADDR::0:0x80 0x38|A i "
 # add
-.string "%RQ2,%RQ1:0::1:0x01 0xc0|R|s "
-.string "%RL2,%RL1:0::0:0x01 0xc0|R|s "
-.string "%RW2,%RW1:0:0x66 :0:0x01 0xc0|R|s "
-.string "%RB2,%RB1:0::0:0x00 0xc0|R|s "
-.string "%RQ2,ADDR:0::1:0x01 s|A "
-.string "%RL2,ADDR:0::0:0x01 s|A "
-.string "%RW2,ADDR:0:0x66 :0:0x01 s|A "
-.string "%RB2,ADDR:0::0:0x00 s|A "
-.string "ADDR,%RQ2:0::1:0x03 s|A "
-.string "ADDR,%RL2:0::0:0x03 s|A "
-.string "ADDR,%RW2:0:0x66 :0:0x03 s|A "
-.string "ADDR,%RB2:0::0:0x02 s|A "
-.string "$IMM,%RQ1:1::1:0x83 0xc0|R i "
-.string "$IMM,%RQ1:0::1:0x81 0xc0|R k "
-.string "$IMM,%RL1:1::0:0x83 0xc0|R i "
-.string "$IMM,%RL1:0::0:0x81 0xc0|R k "
-.string "$IMM,%RW1:1:0x66 :0:0x83 0xc0|R i "
-.string "$IMM,%RW1:0:0x66 :0:0x81 0xc0|R j "
-.string "$IMM,%RB1:0::0:0x80 0xc0|R i "
+.string "%RQ2,%RQ1::1:0x01 0xc0|R|s "
+.string "%RL2,%RL1::0:0x01 0xc0|R|s "
+.string "%RW2,%RW1:0x66 :0:0x01 0xc0|R|s "
+.string "%RB2,%RB1::0:0x00 0xc0|R|s "
+.string "%RQ2,ADDR::1:0x01 s|A "
+.string "%RL2,ADDR::0:0x01 s|A "
+.string "%RW2,ADDR:0x66 :0:0x01 s|A "
+.string "%RB2,ADDR::0:0x00 s|A "
+.string "ADDR,%RQ2::1:0x03 s|A "
+.string "ADDR,%RL2::0:0x03 s|A "
+.string "ADDR,%RW2:0x66 :0:0x03 s|A "
+.string "ADDR,%RB2::0:0x02 s|A "
+.string "$IMM,%RQ1::1:0x83 0xc0|R I "
+.string "$IMM,%RQ1::1:0x81 0xc0|R K "
+.string "$IMM,%RL1::0:0x83 0xc0|R I "
+.string "$IMM,%RL1::0:0x81 0xc0|R k "
+.string "$IMM,%RW1:0x66 :0:0x83 0xc0|R I "
+.string "$IMM,%RW1:0x66 :0:0x81 0xc0|R j "
+.string "$IMM,%RB1::0:0x80 0xc0|R i "
 # addq
-.string "$IMM,ADDR:1::1:0x83 0x00|A i "
-.string "$IMM,ADDR:0::1:0x81 0x00|A k "
-.string "$IMM,ADDR:1::0:0x83 0x00|A i "
-.string "$IMM,ADDR:0::0:0x81 0x00|A k "
-.string "$IMM,ADDR:1:0x66 :0:0x83 0x00|A i "
-.string "$IMM,ADDR:0:0x66 :0:0x81 0x00|A j "
-.string "$IMM,ADDR:0::0:0x80 0x00|A i "
+.string "$IMM,ADDR::1:0x83 0x00|A I "
+.string "$IMM,ADDR::1:0x81 0x00|A K "
+.string "$IMM,ADDR::0:0x83 0x00|A I "
+.string "$IMM,ADDR::0:0x81 0x00|A k "
+.string "$IMM,ADDR:0x66 :0:0x83 0x00|A I "
+.string "$IMM,ADDR:0x66 :0:0x81 0x00|A j "
+.string "$IMM,ADDR::0:0x80 0x00|A i "
 # sub
-.string "%RQ2,%RQ1:0::1:0x29 0xc0|R|s "
-.string "%RL2,%RL1:0::0:0x29 0xc0|R|s "
-.string "%RW2,%RW1:0:0x66 :0:0x29 0xc0|R|s "
-.string "%RB2,%RB1:0::0:0x28 0xc0|R|s "
-.string "%RQ2,ADDR:0::1:0x29 s|A "
-.string "%RL2,ADDR:0::0:0x29 s|A "
-.string "%RW2,ADDR:0:0x66 :0:0x29 s|A "
-.string "%RB2,ADDR:0::0:0x28 s|A "
-.string "ADDR,%RQ2:0::1:0x2b s|A "
-.string "ADDR,%RL2:0::0:0x2b s|A "
-.string "ADDR,%RW2:0:0x66 :0:0x2b s|A "
-.string "ADDR,%RB2:0::0:0x2a s|A "
-.string "$IMM,%RQ1:1::1:0x83 0xe8|R i "
-.string "$IMM,%RQ1:0::1:0x81 0xe8|R k "
-.string "$IMM,%RL1:1::0:0x83 0xe8|R i "
-.string "$IMM,%RL1:0::0:0x81 0xe8|R k "
-.string "$IMM,%RW1:1:0x66 :0:0x83 0xe8|R i "
-.string "$IMM,%RW1:0:0x66 :0:0x81 0xe8|R j "
-.string "$IMM,%RB1:0::0:0x80 0xe8|R i "
+.string "%RQ2,%RQ1::1:0x29 0xc0|R|s "
+.string "%RL2,%RL1::0:0x29 0xc0|R|s "
+.string "%RW2,%RW1:0x66 :0:0x29 0xc0|R|s "
+.string "%RB2,%RB1::0:0x28 0xc0|R|s "
+.string "%RQ2,ADDR::1:0x29 s|A "
+.string "%RL2,ADDR::0:0x29 s|A "
+.string "%RW2,ADDR:0x66 :0:0x29 s|A "
+.string "%RB2,ADDR::0:0x28 s|A "
+.string "ADDR,%RQ2::1:0x2b s|A "
+.string "ADDR,%RL2::0:0x2b s|A "
+.string "ADDR,%RW2:0x66 :0:0x2b s|A "
+.string "ADDR,%RB2::0:0x2a s|A "
+.string "$IMM,%RQ1::1:0x83 0xe8|R I "
+.string "$IMM,%RQ1::1:0x81 0xe8|R K "
+.string "$IMM,%RL1::0:0x83 0xe8|R I "
+.string "$IMM,%RL1::0:0x81 0xe8|R k "
+.string "$IMM,%RW1:0x66 :0:0x83 0xe8|R I "
+.string "$IMM,%RW1:0x66 :0:0x81 0xe8|R j "
+.string "$IMM,%RB1::0:0x80 0xe8|R i "
 # subq
-.string "$IMM,ADDR:1::1:0x83 0x28|A i "
-.string "$IMM,ADDR:0::1:0x81 0x28|A k "
-.string "$IMM,ADDR:1::0:0x83 0x28|A i "
-.string "$IMM,ADDR:0::0:0x81 0x28|A k "
-.string "$IMM,ADDR:1:0x66 :0:0x83 0x28|A i "
-.string "$IMM,ADDR:0:0x66 :0:0x81 0x28|A j "
-.string "$IMM,ADDR:0::0:0x80 0x28|A i "
+.string "$IMM,ADDR::1:0x83 0x28|A I "
+.string "$IMM,ADDR::1:0x81 0x28|A K "
+.string "$IMM,ADDR::0:0x83 0x28|A I "
+.string "$IMM,ADDR::0:0x81 0x28|A k "
+.string "$IMM,ADDR:0x66 :0:0x83 0x28|A I "
+.string "$IMM,ADDR:0x66 :0:0x81 0x28|A j "
+.string "$IMM,ADDR::0:0x80 0x28|A i "
 # and
-.string "%RQ2,%RQ1:0::1:0x21 0xc0|R|s "
-.string "%RL2,%RL1:0::0:0x21 0xc0|R|s "
-.string "%RW2,%RW1:0:0x66 :0:0x21 0xc0|R|s "
-.string "%RB2,%RB1:0::0:0x20 0xc0|R|s "
-.string "%RQ2,ADDR:0::1:0x21 s|A "
-.string "%RL2,ADDR:0::0:0x21 s|A "
-.string "%RW2,ADDR:0:0x66 :0:0x21 s|A "
-.string "%RB2,ADDR:0::0:0x20 s|A "
-.string "ADDR,%RQ2:0::1:0x23 s|A "
-.string "ADDR,%RL2:0::0:0x23 s|A "
-.string "ADDR,%RW2:0:0x66 :0:0x23 s|A "
-.string "ADDR,%RB2:0::0:0x22 s|A "
-.string "$IMM,%RQ1:1::1:0x83 0xe0|R i "
-.string "$IMM,%RQ1:0::1:0x81 0xe0|R k "
-.string "$IMM,%RL1:1::0:0x83 0xe0|R i "
-.string "$IMM,%RL1:0::0:0x81 0xe0|R k "
-.string "$IMM,%RW1:1:0x66 :0:0x83 0xe0|R i "
-.string "$IMM,%RW1:0:0x66 :0:0x81 0xe0|R j "
-.string "$IMM,%RB1:0::0:0x80 0xe0|R i "
+.string "%RQ2,%RQ1::1:0x21 0xc0|R|s "
+.string "%RL2,%RL1::0:0x21 0xc0|R|s "
+.string "%RW2,%RW1:0x66 :0:0x21 0xc0|R|s "
+.string "%RB2,%RB1::0:0x20 0xc0|R|s "
+.string "%RQ2,ADDR::1:0x21 s|A "
+.string "%RL2,ADDR::0:0x21 s|A "
+.string "%RW2,ADDR:0x66 :0:0x21 s|A "
+.string "%RB2,ADDR::0:0x20 s|A "
+.string "ADDR,%RQ2::1:0x23 s|A "
+.string "ADDR,%RL2::0:0x23 s|A "
+.string "ADDR,%RW2:0x66 :0:0x23 s|A "
+.string "ADDR,%RB2::0:0x22 s|A "
+.string "$IMM,%RQ1::1:0x83 0xe0|R I "
+.string "$IMM,%RQ1::1:0x81 0xe0|R K "
+.string "$IMM,%RL1::0:0x83 0xe0|R I "
+.string "$IMM,%RL1::0:0x81 0xe0|R k "
+.string "$IMM,%RW1:0x66 :0:0x83 0xe0|R I "
+.string "$IMM,%RW1:0x66 :0:0x81 0xe0|R j "
+.string "$IMM,%RB1::0:0x80 0xe0|R i "
 # andq
-.string "$IMM,ADDR:1::1:0x83 0x20|A i "
-.string "$IMM,ADDR:0::1:0x81 0x20|A k "
-.string "$IMM,ADDR:1::0:0x83 0x20|A i "
-.string "$IMM,ADDR:0::0:0x81 0x20|A k "
-.string "$IMM,ADDR:1:0x66 :0:0x83 0x20|A i "
-.string "$IMM,ADDR:0:0x66 :0:0x81 0x20|A j "
-.string "$IMM,ADDR:0::0:0x80 0x20|A i "
+.string "$IMM,ADDR::1:0x83 0x20|A I "
+.string "$IMM,ADDR::1:0x81 0x20|A K "
+.string "$IMM,ADDR::0:0x83 0x20|A I "
+.string "$IMM,ADDR::0:0x81 0x20|A k "
+.string "$IMM,ADDR:0x66 :0:0x83 0x20|A I "
+.string "$IMM,ADDR:0x66 :0:0x81 0x20|A j "
+.string "$IMM,ADDR::0:0x80 0x20|A i "
 # or
-.string "%RQ2,%RQ1:0::1:0x09 0xc0|R|s "
-.string "%RL2,%RL1:0::0:0x09 0xc0|R|s "
-.string "%RW2,%RW1:0:0x66 :0:0x09 0xc0|R|s "
-.string "%RB2,%RB1:0::0:0x08 0xc0|R|s "
-.string "%RQ2,ADDR:0::1:0x09 s|A "
-.string "%RL2,ADDR:0::0:0x09 s|A "
-.string "%RW2,ADDR:0:0x66 :0:0x09 s|A "
-.string "%RB2,ADDR:0::0:0x08 s|A "
-.string "ADDR,%RQ2:0::1:0x0b s|A "
-.string "ADDR,%RL2:0::0:0x0b s|A "
-.string "ADDR,%RW2:0:0x66 :0:0x0b s|A "
-.string "ADDR,%RB2:0::0:0x0a s|A "
-.string "$IMM,%RQ1:1::1:0x83 0xc8|R i "
-.string "$IMM,%RQ1:0::1:0x81 0xc8|R k "
-.string "$IMM,%RL1:1::0:0x83 0xc8|R i "
-.string "$IMM,%RL1:0::0:0x81 0xc8|R k "
-.string "$IMM,%RW1:1:0x66 :0:0x83 0xc8|R i "
-.string "$IMM,%RW1:0:0x66 :0:0x81 0xc8|R j "
-.string "$IMM,%RB1:0::0:0x80 0xc8|R i "
+.string "%RQ2,%RQ1::1:0x09 0xc0|R|s "
+.string "%RL2,%RL1::0:0x09 0xc0|R|s "
+.string "%RW2,%RW1:0x66 :0:0x09 0xc0|R|s "
+.string "%RB2,%RB1::0:0x08 0xc0|R|s "
+.string "%RQ2,ADDR::1:0x09 s|A "
+.string "%RL2,ADDR::0:0x09 s|A "
+.string "%RW2,ADDR:0x66 :0:0x09 s|A "
+.string "%RB2,ADDR::0:0x08 s|A "
+.string "ADDR,%RQ2::1:0x0b s|A "
+.string "ADDR,%RL2::0:0x0b s|A "
+.string "ADDR,%RW2:0x66 :0:0x0b s|A "
+.string "ADDR,%RB2::0:0x0a s|A "
+.string "$IMM,%RQ1::1:0x83 0xc8|R I "
+.string "$IMM,%RQ1::1:0x81 0xc8|R K "
+.string "$IMM,%RL1::0:0x83 0xc8|R I "
+.string "$IMM,%RL1::0:0x81 0xc8|R k "
+.string "$IMM,%RW1:0x66 :0:0x83 0xc8|R I "
+.string "$IMM,%RW1:0x66 :0:0x81 0xc8|R j "
+.string "$IMM,%RB1::0:0x80 0xc8|R i "
 # orq
-.string "$IMM,ADDR:1::1:0x83 0x08|A i "
-.string "$IMM,ADDR:0::1:0x81 0x08|A k "
-.string "$IMM,ADDR:1::0:0x83 0x08|A i "
-.string "$IMM,ADDR:0::0:0x81 0x08|A k "
-.string "$IMM,ADDR:1:0x66 :0:0x83 0x08|A i "
-.string "$IMM,ADDR:0:0x66 :0:0x81 0x08|A j "
-.string "$IMM,ADDR:0::0:0x80 0x08|A i "
+.string "$IMM,ADDR::1:0x83 0x08|A I "
+.string "$IMM,ADDR::1:0x81 0x08|A K "
+.string "$IMM,ADDR::0:0x83 0x08|A I "
+.string "$IMM,ADDR::0:0x81 0x08|A k "
+.string "$IMM,ADDR:0x66 :0:0x83 0x08|A I "
+.string "$IMM,ADDR:0x66 :0:0x81 0x08|A j "
+.string "$IMM,ADDR::0:0x80 0x08|A i "
 # xor
-.string "%RQ2,%RQ1:0::1:0x31 0xc0|R|s "
-.string "%RL2,%RL1:0::0:0x31 0xc0|R|s "
-.string "%RW2,%RW1:0:0x66 :0:0x31 0xc0|R|s "
-.string "%RB2,%RB1:0::0:0x30 0xc0|R|s "
-.string "%RQ2,ADDR:0::1:0x31 s|A "
-.string "%RL2,ADDR:0::0:0x31 s|A "
-.string "%RW2,ADDR:0:0x66 :0:0x31 s|A "
-.string "%RB2,ADDR:0::0:0x30 s|A "
-.string "ADDR,%RQ2:0::1:0x33 s|A "
-.string "ADDR,%RL2:0::0:0x33 s|A "
-.string "ADDR,%RW2:0:0x66 :0:0x33 s|A "
-.string "ADDR,%RB2:0::0:0x32 s|A "
-.string "$IMM,%RQ1:1::1:0x83 0xf0|R i "
-.string "$IMM,%RQ1:0::1:0x81 0xf0|R k "
-.string "$IMM,%RL1:1::0:0x83 0xf0|R i "
-.string "$IMM,%RL1:0::0:0x81 0xf0|R k "
-.string "$IMM,%RW1:1:0x66 :0:0x83 0xf0|R i "
-.string "$IMM,%RW1:0:0x66 :0:0x81 0xf0|R j "
-.string "$IMM,%RB1:0::0:0x80 0xf0|R i "
+.string "%RQ2,%RQ1::1:0x31 0xc0|R|s "
+.string "%RL2,%RL1::0:0x31 0xc0|R|s "
+.string "%RW2,%RW1:0x66 :0:0x31 0xc0|R|s "
+.string "%RB2,%RB1::0:0x30 0xc0|R|s "
+.string "%RQ2,ADDR::1:0x31 s|A "
+.string "%RL2,ADDR::0:0x31 s|A "
+.string "%RW2,ADDR:0x66 :0:0x31 s|A "
+.string "%RB2,ADDR::0:0x30 s|A "
+.string "ADDR,%RQ2::1:0x33 s|A "
+.string "ADDR,%RL2::0:0x33 s|A "
+.string "ADDR,%RW2:0x66 :0:0x33 s|A "
+.string "ADDR,%RB2::0:0x32 s|A "
+.string "$IMM,%RQ1::1:0x83 0xf0|R I "
+.string "$IMM,%RQ1::1:0x81 0xf0|R K "
+.string "$IMM,%RL1::0:0x83 0xf0|R I "
+.string "$IMM,%RL1::0:0x81 0xf0|R k "
+.string "$IMM,%RW1:0x66 :0:0x83 0xf0|R I "
+.string "$IMM,%RW1:0x66 :0:0x81 0xf0|R j "
+.string "$IMM,%RB1::0:0x80 0xf0|R i "
 # xorq
-.string "$IMM,ADDR:1::1:0x83 0x30|A i "
-.string "$IMM,ADDR:0::1:0x81 0x30|A k "
-.string "$IMM,ADDR:1::0:0x83 0x30|A i "
-.string "$IMM,ADDR:0::0:0x81 0x30|A k "
-.string "$IMM,ADDR:1:0x66 :0:0x83 0x30|A i "
-.string "$IMM,ADDR:0:0x66 :0:0x81 0x30|A j "
-.string "$IMM,ADDR:0::0:0x80 0x30|A i "
+.string "$IMM,ADDR::1:0x83 0x30|A I "
+.string "$IMM,ADDR::1:0x81 0x30|A K "
+.string "$IMM,ADDR::0:0x83 0x30|A I "
+.string "$IMM,ADDR::0:0x81 0x30|A k "
+.string "$IMM,ADDR:0x66 :0:0x83 0x30|A I "
+.string "$IMM,ADDR:0x66 :0:0x81 0x30|A j "
+.string "$IMM,ADDR::0:0x80 0x30|A i "
 # test
-.string "%RQ2,%RQ1:0::1:0x85 0xc0|R|s "
-.string "%RL2,%RL1:0::0:0x85 0xc0|R|s "
-.string "%RW2,%RW1:0:0x66 :0:0x85 0xc0|R|s "
-.string "%RB2,%RB1:0::0:0x84 0xc0|R|s "
-.string "%RQ2,ADDR:0::1:0x85 s|A "
-.string "%RL2,ADDR:0::0:0x85 s|A "
-.string "%RW2,ADDR:0:0x66 :0:0x85 s|A "
-.string "%RB2,ADDR:0::0:0x84 s|A "
-.string "ADDR,%RQ2:0::1:0x85 s|A "
-.string "ADDR,%RL2:0::0:0x85 s|A "
-.string "ADDR,%RW2:0:0x66 :0:0x85 s|A "
-.string "ADDR,%RB2:0::0:0x84 s|A "
-.string "$IMM,%RQ1:0::1:0xf7 0xc0|R k "
-.string "$IMM,%RL1:0::0:0xf7 0xc0|R k "
-.string "$IMM,%RW1:0:0x66 :0:0xf7 0xc0|R j "
-.string "$IMM,%RB1:0::0:0xf6 0xc0|R i "
+.string "%RQ2,%RQ1::1:0x85 0xc0|R|s "
+.string "%RL2,%RL1::0:0x85 0xc0|R|s "
+.string "%RW2,%RW1:0x66 :0:0x85 0xc0|R|s "
+.string "%RB2,%RB1::0:0x84 0xc0|R|s "
+.string "%RQ2,ADDR::1:0x85 s|A "
+.string "%RL2,ADDR::0:0x85 s|A "
+.string "%RW2,ADDR:0x66 :0:0x85 s|A "
+.string "%RB2,ADDR::0:0x84 s|A "
+.string "ADDR,%RQ2::1:0x85 s|A "
+.string "ADDR,%RL2::0:0x85 s|A "
+.string "ADDR,%RW2:0x66 :0:0x85 s|A "
+.string "ADDR,%RB2::0:0x84 s|A "
+.string "$IMM,%RQ1::1:0xf7 0xc0|R K "
+.string "$IMM,%RL1::0:0xf7 0xc0|R k "
+.string "$IMM,%RW1:0x66 :0:0xf7 0xc0|R j "
+.string "$IMM,%RB1::0:0xf6 0xc0|R i "
 # testq
-.string "$IMM,ADDR:0::1:0xf7 0x00|A k "
-.string "$IMM,ADDR:0::0:0xf7 0x00|A k "
-.string "$IMM,ADDR:0:0x66 :0:0xf7 0x00|A j "
-.string "$IMM,ADDR:0::0:0xf6 0x00|A i "
+.string "$IMM,ADDR::1:0xf7 0x00|A K "
+.string "$IMM,ADDR::0:0xf7 0x00|A k "
+.string "$IMM,ADDR:0x66 :0:0xf7 0x00|A j "
+.string "$IMM,ADDR::0:0xf6 0x00|A i "
 # inc
-.string "%RQ1:0::1:0xff 0xc0|R "
-.string "%RL1:0::0:0xff 0xc0|R "
-.string "%RW1:0:0x66 :0:0xff 0xc0|R "
-.string "%RB1:0::0:0xfe 0xc0|R "
-.string "ADDR:0::1:0xff 0x00|A "
-.string "ADDR:0::0:0xff 0x00|A "
-.string "ADDR:0:0x66 :0:0xff 0x00|A "
-.string "ADDR:0::0:0xfe 0x00|A "
+.string "%RQ1::1:0xff 0xc0|R "
+.string "%RL1::0:0xff 0xc0|R "
+.string "%RW1:0x66 :0:0xff 0xc0|R "
+.string "%RB1::0:0xfe 0xc0|R "
+.string "ADDR::1:0xff 0x00|A "
+.string "ADDR::0:0xff 0x00|A "
+.string "ADDR:0x66 :0:0xff 0x00|A "
+.string "ADDR::0:0xfe 0x00|A "
 # dec
-.string "%RQ1:0::1:0xff 0xc8|R "
-.string "%RL1:0::0:0xff 0xc8|R "
-.string "%RW1:0:0x66 :0:0xff 0xc8|R "
-.string "%RB1:0::0:0xfe 0xc8|R "
-.string "ADDR:0::1:0xff 0x08|A "
-.string "ADDR:0::0:0xff 0x08|A "
-.string "ADDR:0:0x66 :0:0xff 0x08|A "
-.string "ADDR:0::0:0xfe 0x08|A "
+.string "%RQ1::1:0xff 0xc8|R "
+.string "%RL1::0:0xff 0xc8|R "
+.string "%RW1:0x66 :0:0xff 0xc8|R "
+.string "%RB1::0:0xfe 0xc8|R "
+.string "ADDR::1:0xff 0x08|A "
+.string "ADDR::0:0xff 0x08|A "
+.string "ADDR:0x66 :0:0xff 0x08|A "
+.string "ADDR::0:0xfe 0x08|A "
 # mul
-.string "%RQ1:0::1:0xf7 0xe0|R "
-.string "%RL1:0::0:0xf7 0xe0|R "
-.string "%RW1:0:0x66 :0:0xf7 0xe0|R "
-.string "%RB1:0::0:0xf6 0xe0|R "
-.string "ADDR:0::1:0xf7 0x20|A "
-.string "ADDR:0::0:0xf7 0x20|A "
-.string "ADDR:0:0x66 :0:0xf7 0x20|A "
-.string "ADDR:0::0:0xf6 0x20|A "
+.string "%RQ1::1:0xf7 0xe0|R "
+.string "%RL1::0:0xf7 0xe0|R "
+.string "%RW1:0x66 :0:0xf7 0xe0|R "
+.string "%RB1::0:0xf6 0xe0|R "
+.string "ADDR::1:0xf7 0x20|A "
+.string "ADDR::0:0xf7 0x20|A "
+.string "ADDR:0x66 :0:0xf7 0x20|A "
+.string "ADDR::0:0xf6 0x20|A "
 # imul
-.string "%RQ1:0::1:0xf7 0xe8|R "
-.string "%RL1:0::0:0xf7 0xe8|R "
-.string "%RW1:0:0x66 :0:0xf7 0xe8|R "
-.string "%RB1:0::0:0xf6 0xe8|R "
-.string "ADDR:0::1:0xf7 0x28|A "
-.string "ADDR:0::0:0xf7 0x28|A "
-.string "ADDR:0:0x66 :0:0xf7 0x28|A "
-.string "ADDR:0::0:0xf6 0x28|A "
+.string "%RQ1::1:0xf7 0xe8|R "
+.string "%RL1::0:0xf7 0xe8|R "
+.string "%RW1:0x66 :0:0xf7 0xe8|R "
+.string "%RB1::0:0xf6 0xe8|R "
+.string "ADDR::1:0xf7 0x28|A "
+.string "ADDR::0:0xf7 0x28|A "
+.string "ADDR:0x66 :0:0xf7 0x28|A "
+.string "ADDR::0:0xf6 0x28|A "
 # div
-.string "%RQ1:0::1:0xf7 0xf0|R "
-.string "%RL1:0::0:0xf7 0xf0|R "
-.string "%RW1:0:0x66 :0:0xf7 0xf0|R "
-.string "%RB1:0::0:0xf6 0xf0|R "
-.string "ADDR:0::1:0xf7 0x30|A "
-.string "ADDR:0::0:0xf7 0x30|A "
-.string "ADDR:0:0x66 :0:0xf7 0x30|A "
-.string "ADDR:0::0:0xf6 0x30|A "
+.string "%RQ1::1:0xf7 0xf0|R "
+.string "%RL1::0:0xf7 0xf0|R "
+.string "%RW1:0x66 :0:0xf7 0xf0|R "
+.string "%RB1::0:0xf6 0xf0|R "
+.string "ADDR::1:0xf7 0x30|A "
+.string "ADDR::0:0xf7 0x30|A "
+.string "ADDR:0x66 :0:0xf7 0x30|A "
+.string "ADDR::0:0xf6 0x30|A "
 # idiv
-.string "%RQ1:0::1:0xf7 0xf8|R "
-.string "%RL1:0::0:0xf7 0xf8|R "
-.string "%RW1:0:0x66 :0:0xf7 0xf8|R "
-.string "%RB1:0::0:0xf6 0xf8|R "
-.string "ADDR:0::1:0xf7 0x38|A "
-.string "ADDR:0::0:0xf7 0x38|A "
-.string "ADDR:0:0x66 :0:0xf7 0x38|A "
-.string "ADDR:0::0:0xf6 0x38|A "
+.string "%RQ1::1:0xf7 0xf8|R "
+.string "%RL1::0:0xf7 0xf8|R "
+.string "%RW1:0x66 :0:0xf7 0xf8|R "
+.string "%RB1::0:0xf6 0xf8|R "
+.string "ADDR::1:0xf7 0x38|A "
+.string "ADDR::0:0xf7 0x38|A "
+.string "ADDR:0x66 :0:0xf7 0x38|A "
+.string "ADDR::0:0xf6 0x38|A "
 # not
-.string "%RQ1:0::1:0xf7 0xd0|R "
-.string "%RL1:0::0:0xf7 0xd0|R "
-.string "%RW1:0:0x66 :0:0xf7 0xd0|R "
-.string "%RB1:0::0:0xf6 0xd0|R "
-.string "ADDR:0::1:0xf7 0x10|A "
-.string "ADDR:0::0:0xf7 0x10|A "
-.string "ADDR:0:0x66 :0:0xf7 0x10|A "
-.string "ADDR:0::0:0xf6 0x10|A "
+.string "%RQ1::1:0xf7 0xd0|R "
+.string "%RL1::0:0xf7 0xd0|R "
+.string "%RW1:0x66 :0:0xf7 0xd0|R "
+.string "%RB1::0:0xf6 0xd0|R "
+.string "ADDR::1:0xf7 0x10|A "
+.string "ADDR::0:0xf7 0x10|A "
+.string "ADDR:0x66 :0:0xf7 0x10|A "
+.string "ADDR::0:0xf6 0x10|A "
 # neg
-.string "%RQ1:0::1:0xf7 0xd8|R "
-.string "%RL1:0::0:0xf7 0xd8|R "
-.string "%RW1:0:0x66 :0:0xf7 0xd8|R "
-.string "%RB1:0::0:0xf6 0xd8|R "
-.string "ADDR:0::1:0xf7 0x18|A "
-.string "ADDR:0::0:0xf7 0x18|A "
-.string "ADDR:0:0x66 :0:0xf7 0x18|A "
-.string "ADDR:0::0:0xf6 0x18|A "
+.string "%RQ1::1:0xf7 0xd8|R "
+.string "%RL1::0:0xf7 0xd8|R "
+.string "%RW1:0x66 :0:0xf7 0xd8|R "
+.string "%RB1::0:0xf6 0xd8|R "
+.string "ADDR::1:0xf7 0x18|A "
+.string "ADDR::0:0xf7 0x18|A "
+.string "ADDR:0x66 :0:0xf7 0x18|A "
+.string "ADDR::0:0xf6 0x18|A "
 # shl
-.string "$IMM,%RQ1:0::1:0xc1 0xe0|R i "
-.string "$IMM,%RL1:0::0:0xc1 0xe0|R i "
-.string "$IMM,%RW1:0:0x66 :0:0xc1 0xe0|R i "
-.string "$IMM,%RB1:0::0:0xc0 0xe0|R i "
-.string "%CL,%RQ1:0::1:0xd3 0xe0|R "
-.string "%CL,%RL1:0::0:0xd3 0xe0|R "
-.string "%CL,%RW1:0:0x66 :0:0xd3 0xe0|R "
-.string "%CL,%RB1:0::0:0xd2 0xe0|R "
-.string "$IMM,ADDR:0::1:0xc1 0x20|A i "
-.string "%CL,ADDR:0::1:0xd3 0x20|A "
-.string "$IMM,ADDR:0::0:0xc1 0x20|A i "
-.string "%CL,ADDR:0::0:0xd3 0x20|A "
-.string "$IMM,ADDR:0:0x66 :0:0xc1 0x20|A i "
-.string "%CL,ADDR:0:0x66 :0:0xd3 0x20|A "
-.string "$IMM,ADDR:0::0:0xc0 0x20|A i "
-.string "%CL,ADDR:0::0:0xd2 0x20|A "
+.string "$IMM,%RQ1::1:0xc1 0xe0|R i "
+.string "$IMM,%RL1::0:0xc1 0xe0|R i "
+.string "$IMM,%RW1:0x66 :0:0xc1 0xe0|R i "
+.string "$IMM,%RB1::0:0xc0 0xe0|R i "
+.string "%CL,%RQ1::1:0xd3 0xe0|R "
+.string "%CL,%RL1::0:0xd3 0xe0|R "
+.string "%CL,%RW1:0x66 :0:0xd3 0xe0|R "
+.string "%CL,%RB1::0:0xd2 0xe0|R "
+.string "$IMM,ADDR::1:0xc1 0x20|A i "
+.string "%CL,ADDR::1:0xd3 0x20|A "
+.string "$IMM,ADDR::0:0xc1 0x20|A i "
+.string "%CL,ADDR::0:0xd3 0x20|A "
+.string "$IMM,ADDR:0x66 :0:0xc1 0x20|A i "
+.string "%CL,ADDR:0x66 :0:0xd3 0x20|A "
+.string "$IMM,ADDR::0:0xc0 0x20|A i "
+.string "%CL,ADDR::0:0xd2 0x20|A "
 # shr
-.string "$IMM,%RQ1:0::1:0xc1 0xe8|R i "
-.string "$IMM,%RL1:0::0:0xc1 0xe8|R i "
-.string "$IMM,%RW1:0:0x66 :0:0xc1 0xe8|R i "
-.string "$IMM,%RB1:0::0:0xc0 0xe8|R i "
-.string "%CL,%RQ1:0::1:0xd3 0xe8|R "
-.string "%CL,%RL1:0::0:0xd3 0xe8|R "
-.string "%CL,%RW1:0:0x66 :0:0xd3 0xe8|R "
-.string "%CL,%RB1:0::0:0xd2 0xe8|R "
-.string "$IMM,ADDR:0::1:0xc1 0x28|A i "
-.string "%CL,ADDR:0::1:0xd3 0x28|A "
-.string "$IMM,ADDR:0::0:0xc1 0x28|A i "
-.string "%CL,ADDR:0::0:0xd3 0x28|A "
-.string "$IMM,ADDR:0:0x66 :0:0xc1 0x28|A i "
-.string "%CL,ADDR:0:0x66 :0:0xd3 0x28|A "
-.string "$IMM,ADDR:0::0:0xc0 0x28|A i "
-.string "%CL,ADDR:0::0:0xd2 0x28|A "
+.string "$IMM,%RQ1::1:0xc1 0xe8|R i "
+.string "$IMM,%RL1::0:0xc1 0xe8|R i "
+.string "$IMM,%RW1:0x66 :0:0xc1 0xe8|R i "
+.string "$IMM,%RB1::0:0xc0 0xe8|R i "
+.string "%CL,%RQ1::1:0xd3 0xe8|R "
+.string "%CL,%RL1::0:0xd3 0xe8|R "
+.string "%CL,%RW1:0x66 :0:0xd3 0xe8|R "
+.string "%CL,%RB1::0:0xd2 0xe8|R "
+.string "$IMM,ADDR::1:0xc1 0x28|A i "
+.string "%CL,ADDR::1:0xd3 0x28|A "
+.string "$IMM,ADDR::0:0xc1 0x28|A i "
+.string "%CL,ADDR::0:0xd3 0x28|A "
+.string "$IMM,ADDR:0x66 :0:0xc1 0x28|A i "
+.string "%CL,ADDR:0x66 :0:0xd3 0x28|A "
+.string "$IMM,ADDR::0:0xc0 0x28|A i "
+.string "%CL,ADDR::0:0xd2 0x28|A "
 # sar
-.string "$IMM,%RQ1:0::1:0xc1 0xf8|R i "
-.string "$IMM,%RL1:0::0:0xc1 0xf8|R i "
-.string "$IMM,%RW1:0:0x66 :0:0xc1 0xf8|R i "
-.string "$IMM,%RB1:0::0:0xc0 0xf8|R i "
-.string "%CL,%RQ1:0::1:0xd3 0xf8|R "
-.string "%CL,%RL1:0::0:0xd3 0xf8|R "
-.string "%CL,%RW1:0:0x66 :0:0xd3 0xf8|R "
-.string "%CL,%RB1:0::0:0xd2 0xf8|R "
-.string "$IMM,ADDR:0::1:0xc1 0x38|A i "
-.string "%CL,ADDR:0::1:0xd3 0x38|A "
-.string "$IMM,ADDR:0::0:0xc1 0x38|A i "
-.string "%CL,ADDR:0::0:0xd3 0x38|A "
-.string "$IMM,ADDR:0:0x66 :0:0xc1 0x38|A i "
-.string "%CL,ADDR:0:0x66 :0:0xd3 0x38|A "
-.string "$IMM,ADDR:0::0:0xc0 0x38|A i "
-.string "%CL,ADDR:0::0:0xd2 0x38|A "
+.string "$IMM,%RQ1::1:0xc1 0xf8|R i "
+.string "$IMM,%RL1::0:0xc1 0xf8|R i "
+.string "$IMM,%RW1:0x66 :0:0xc1 0xf8|R i "
+.string "$IMM,%RB1::0:0xc0 0xf8|R i "
+.string "%CL,%RQ1::1:0xd3 0xf8|R "
+.string "%CL,%RL1::0:0xd3 0xf8|R "
+.string "%CL,%RW1:0x66 :0:0xd3 0xf8|R "
+.string "%CL,%RB1::0:0xd2 0xf8|R "
+.string "$IMM,ADDR::1:0xc1 0x38|A i "
+.string "%CL,ADDR::1:0xd3 0x38|A "
+.string "$IMM,ADDR::0:0xc1 0x38|A i "
+.string "%CL,ADDR::0:0xd3 0x38|A "
+.string "$IMM,ADDR:0x66 :0:0xc1 0x38|A i "
+.string "%CL,ADDR:0x66 :0:0xd3 0x38|A "
+.string "$IMM,ADDR::0:0xc0 0x38|A i "
+.string "%CL,ADDR::0:0xd2 0x38|A "
 # xchg
-.string "%RQ2,%RQ1:0::1:0x87 0xc0|R|s "
-.string "%RL2,%RL1:0::0:0x87 0xc0|R|s "
-.string "%RW2,%RW1:0:0x66 :0:0x87 0xc0|R|s "
-.string "%RB2,%RB1:0::0:0x86 0xc0|R|s "
-.string "%RQ2,ADDR:0::1:0x87 0x00|R|s "
-.string "%RL2,ADDR:0::0:0x87 0x00|R|s "
-.string "%RW2,ADDR:0:0x66 :0:0x87 0x00|R|s "
-.string "%RB2,ADDR:0::0:0x86 0x00|R|s "
+.string "%RQ2,%RQ1::1:0x87 0xc0|R|s "
+.string "%RL2,%RL1::0:0x87 0xc0|R|s "
+.string "%RW2,%RW1:0x66 :0:0x87 0xc0|R|s "
+.string "%RB2,%RB1::0:0x86 0xc0|R|s "
+.string "%RQ2,ADDR::1:0x87 0x00|R|s "
+.string "%RL2,ADDR::0:0x87 0x00|R|s "
+.string "%RW2,ADDR:0x66 :0:0x87 0x00|R|s "
+.string "%RB2,ADDR::0:0x86 0x00|R|s "
 # lea
-.string "ADDR,%RQ2:0::1:0x8d s|A "
-.string "ADDR,%RL2:0::0:0x8d s|A "
-.string "ADDR,%RW2:0:0x66 :0:0x8d s|A "
+.string "ADDR,%RQ2::1:0x8d s|A "
+.string "ADDR,%RL2::0:0x8d s|A "
+.string "ADDR,%RW2:0x66 :0:0x8d s|A "
 # movx
-.string "%RB1,%RW2:0:0x66 :0:0x0f 0xb6 0xc0|R|s "
-.string "ADDR,%RW2:0:0x66 :0:0x0f 0xb6 s|A "
-.string "%RB1,%RL2:0::0:0x0f 0xb6 0xc0|R|s "
-.string "ADDR,%RL2:0::0:0x0f 0xb6 s|A "
-.string "%RB1,%RQ2:0::1:0x0f 0xb6 0xc0|R|s "
-.string "ADDR,%RQ2:0::1:0x0f 0xb6 s|A "
-.string "%RW1,%RL2:0::0:0x0f 0xb7 0xc0|R|s "
-.string "ADDR,%RL2:0::0:0x0f 0xb7 s|A "
-.string "%RW1,%RQ2:0::1:0x0f 0xb7 0xc0|R|s "
-.string "ADDR,%RQ2:0::1:0x0f 0xb7 s|A "
-.string "%RB1,%RW2:0:0x66 :0:0x0f 0xbe 0xc0|R|s "
-.string "ADDR,%RW2:0:0x66 :0:0x0f 0xbe s|A "
-.string "%RB1,%RL2:0::0:0x0f 0xbe 0xc0|R|s "
-.string "ADDR,%RL2:0::0:0x0f 0xbe s|A "
-.string "%RB1,%RQ2:0::1:0x0f 0xbe 0xc0|R|s "
-.string "ADDR,%RQ2:0::1:0x0f 0xbe s|A "
-.string "%RW1,%RL2:0::0:0x0f 0xbf 0xc0|R|s "
-.string "ADDR,%RL2:0::0:0x0f 0xbf s|A "
-.string "%RW1,%RQ2:0::1:0x0f 0xbf 0xc0|R|s "
-.string "ADDR,%RQ2:0::1:0x0f 0xbf s|A "
-.string "%RL1,%RQ2:0::1:0x63 0xc0|R|s "
-.string "ADDR,%RQ2:0::1:0x63 s|A "
+.string "%RB1,%RW2:0x66 :0:0x0f 0xb6 0xc0|R|s "
+.string "ADDR,%RW2:0x66 :0:0x0f 0xb6 s|A "
+.string "%RB1,%RL2::0:0x0f 0xb6 0xc0|R|s "
+.string "ADDR,%RL2::0:0x0f 0xb6 s|A "
+.string "%RB1,%RQ2::1:0x0f 0xb6 0xc0|R|s "
+.string "ADDR,%RQ2::1:0x0f 0xb6 s|A "
+.string "%RW1,%RL2::0:0x0f 0xb7 0xc0|R|s "
+.string "ADDR,%RL2::0:0x0f 0xb7 s|A "
+.string "%RW1,%RQ2::1:0x0f 0xb7 0xc0|R|s "
+.string "ADDR,%RQ2::1:0x0f 0xb7 s|A "
+.string "%RB1,%RW2:0x66 :0:0x0f 0xbe 0xc0|R|s "
+.string "ADDR,%RW2:0x66 :0:0x0f 0xbe s|A "
+.string "%RB1,%RL2::0:0x0f 0xbe 0xc0|R|s "
+.string "ADDR,%RL2::0:0x0f 0xbe s|A "
+.string "%RB1,%RQ2::1:0x0f 0xbe 0xc0|R|s "
+.string "ADDR,%RQ2::1:0x0f 0xbe s|A "
+.string "%RW1,%RL2::0:0x0f 0xbf 0xc0|R|s "
+.string "ADDR,%RL2::0:0x0f 0xbf s|A "
+.string "%RW1,%RQ2::1:0x0f 0xbf 0xc0|R|s "
+.string "ADDR,%RQ2::1:0x0f 0xbf s|A "
+.string "%RL1,%RQ2::1:0x63 0xc0|R|s "
+.string "ADDR,%RQ2::1:0x63 s|A "
 # movups
-.string "%RX1,%RX2:0::0:0x0f 0x10 0xc0|R|s "
-.string "ADDR,%RX2:0::0:0x0f 0x10 s|A "
-.string "%RX2,ADDR:0::0:0x0f 0x11 s|A "
+.string "%RX1,%RX2::0:0x0f 0x10 0xc0|R|s "
+.string "ADDR,%RX2::0:0x0f 0x10 s|A "
+.string "%RX2,ADDR::0:0x0f 0x11 s|A "
 # movss
-.string "%RX1,%RX2:0:0xf3 :0:0x0f 0x10 0xc0|R|s "
-.string "ADDR,%RX2:0:0xf3 :0:0x0f 0x10 s|A "
-.string "%RX2,ADDR:0:0xf3 :0:0x0f 0x11 s|A "
+.string "%RX1,%RX2:0xf3 :0:0x0f 0x10 0xc0|R|s "
+.string "ADDR,%RX2:0xf3 :0:0x0f 0x10 s|A "
+.string "%RX2,ADDR:0xf3 :0:0x0f 0x11 s|A "
 # movsd
-.string "%RX1,%RX2:0:0xf2 :0:0x0f 0x10 0xc0|R|s "
-.string "ADDR,%RX2:0:0xf2 :0:0x0f 0x10 s|A "
-.string "%RX2,ADDR:0:0xf2 :0:0x0f 0x11 s|A "
+.string "%RX1,%RX2:0xf2 :0:0x0f 0x10 0xc0|R|s "
+.string "ADDR,%RX2:0xf2 :0:0x0f 0x10 s|A "
+.string "%RX2,ADDR:0xf2 :0:0x0f 0x11 s|A "
 # addss
-.string "%RX1,%RX2:0:0xf3 :0:0x0f 0x58 0xc0|R|s "
-.string "ADDR,%RX2:0:0xf3 :0:0x0f 0x58 s|A "
+.string "%RX1,%RX2:0xf3 :0:0x0f 0x58 0xc0|R|s "
+.string "ADDR,%RX2:0xf3 :0:0x0f 0x58 s|A "
 # addsd
-.string "%RX1,%RX2:0:0xf2 :0:0x0f 0x58 0xc0|R|s "
-.string "ADDR,%RX2:0:0xf2 :0:0x0f 0x58 s|A "
+.string "%RX1,%RX2:0xf2 :0:0x0f 0x58 0xc0|R|s "
+.string "ADDR,%RX2:0xf2 :0:0x0f 0x58 s|A "
 # subss
-.string "%RX1,%RX2:0:0xf3 :0:0x0f 0x5c 0xc0|R|s "
-.string "ADDR,%RX2:0:0xf3 :0:0x0f 0x5c s|A "
+.string "%RX1,%RX2:0xf3 :0:0x0f 0x5c 0xc0|R|s "
+.string "ADDR,%RX2:0xf3 :0:0x0f 0x5c s|A "
 # subsd
-.string "%RX1,%RX2:0:0xf2 :0:0x0f 0x5c 0xc0|R|s "
-.string "ADDR,%RX2:0:0xf2 :0:0x0f 0x5c s|A "
+.string "%RX1,%RX2:0xf2 :0:0x0f 0x5c 0xc0|R|s "
+.string "ADDR,%RX2:0xf2 :0:0x0f 0x5c s|A "
 # mulss
-.string "%RX1,%RX2:0:0xf3 :0:0x0f 0x59 0xc0|R|s "
-.string "ADDR,%RX2:0:0xf3 :0:0x0f 0x59 s|A "
+.string "%RX1,%RX2:0xf3 :0:0x0f 0x59 0xc0|R|s "
+.string "ADDR,%RX2:0xf3 :0:0x0f 0x59 s|A "
 # mulsd
-.string "%RX1,%RX2:0:0xf2 :0:0x0f 0x59 0xc0|R|s "
-.string "ADDR,%RX2:0:0xf2 :0:0x0f 0x59 s|A "
+.string "%RX1,%RX2:0xf2 :0:0x0f 0x59 0xc0|R|s "
+.string "ADDR,%RX2:0xf2 :0:0x0f 0x59 s|A "
 # divss
-.string "%RX1,%RX2:0:0xf3 :0:0x0f 0x5e 0xc0|R|s "
-.string "ADDR,%RX2:0:0xf3 :0:0x0f 0x5e s|A "
+.string "%RX1,%RX2:0xf3 :0:0x0f 0x5e 0xc0|R|s "
+.string "ADDR,%RX2:0xf3 :0:0x0f 0x5e s|A "
 # divsd
-.string "%RX1,%RX2:0:0xf2 :0:0x0f 0x5e 0xc0|R|s "
-.string "ADDR,%RX2:0:0xf2 :0:0x0f 0x5e s|A "
+.string "%RX1,%RX2:0xf2 :0:0x0f 0x5e 0xc0|R|s "
+.string "ADDR,%RX2:0xf2 :0:0x0f 0x5e s|A "
 # comiss
-.string "%RX1,%RX2:0::0:0x0f 0x2f 0xc0|R|s "
+.string "%RX1,%RX2::0:0x0f 0x2f 0xc0|R|s "
 # comisd
-.string "%RX1,%RX2:0:0x66 :0:0x0f 0x2f 0xc0|R|s "
+.string "%RX1,%RX2:0x66 :0:0x0f 0x2f 0xc0|R|s "
 # addps
-.string "%RX1,%RX2:0::0:0x0f 0x58 0xc0|R|s "
-.string "ADDR,%RX2:0::0:0x0f 0x58 s|A "
+.string "%RX1,%RX2::0:0x0f 0x58 0xc0|R|s "
+.string "ADDR,%RX2::0:0x0f 0x58 s|A "
 # addpd
-.string "%RX1,%RX2:0:0x66 :0:0x0f 0x58 0xc0|R|s "
-.string "ADDR,%RX2:0:0x66 :0:0x0f 0x58 s|A "
+.string "%RX1,%RX2:0x66 :0:0x0f 0x58 0xc0|R|s "
+.string "ADDR,%RX2:0x66 :0:0x0f 0x58 s|A "
 # subps
-.string "%RX1,%RX2:0::0:0x0f 0x5c 0xc0|R|s "
-.string "ADDR,%RX2:0::0:0x0f 0x5c s|A "
+.string "%RX1,%RX2::0:0x0f 0x5c 0xc0|R|s "
+.string "ADDR,%RX2::0:0x0f 0x5c s|A "
 # subpd
-.string "%RX1,%RX2:0:0x66 :0:0x0f 0x5c 0xc0|R|s "
-.string "ADDR,%RX2:0:0x66 :0:0x0f 0x5c s|A "
+.string "%RX1,%RX2:0x66 :0:0x0f 0x5c 0xc0|R|s "
+.string "ADDR,%RX2:0x66 :0:0x0f 0x5c s|A "
 # mulps
-.string "%RX1,%RX2:0::0:0x0f 0x59 0xc0|R|s "
-.string "ADDR,%RX2:0::0:0x0f 0x59 s|A "
+.string "%RX1,%RX2::0:0x0f 0x59 0xc0|R|s "
+.string "ADDR,%RX2::0:0x0f 0x59 s|A "
 # mulpd
-.string "%RX1,%RX2:0:0x66 :0:0x0f 0x59 0xc0|R|s "
-.string "ADDR,%RX2:0:0x66 :0:0x0f 0x59 s|A "
+.string "%RX1,%RX2:0x66 :0:0x0f 0x59 0xc0|R|s "
+.string "ADDR,%RX2:0x66 :0:0x0f 0x59 s|A "
 # divps
-.string "%RX1,%RX2:0::0:0x0f 0x5e 0xc0|R|s "
-.string "ADDR,%RX2:0::0:0x0f 0x5e s|A "
+.string "%RX1,%RX2::0:0x0f 0x5e 0xc0|R|s "
+.string "ADDR,%RX2::0:0x0f 0x5e s|A "
 # divpd
-.string "%RX1,%RX2:0:0x66 :0:0x0f 0x5e 0xc0|R|s "
-.string "ADDR,%RX2:0:0x66 :0:0x0f 0x5e s|A "
+.string "%RX1,%RX2:0x66 :0:0x0f 0x5e 0xc0|R|s "
+.string "ADDR,%RX2:0x66 :0:0x0f 0x5e s|A "
 # shufps
-.string "$IMM,%RX1,%RX2:0::0:0x0f 0xc6 0xc0|R|s i "
+.string "$IMM,%RX1,%RX2::0:0x0f 0xc6 0xc0|R|s i "
 # cvtss2sd
-.string "%RX1,%RX2:0:0xf3 :0:0x0f 0x5a 0xc0|R|s "
+.string "%RX1,%RX2:0xf3 :0:0x0f 0x5a 0xc0|R|s "
 # cvtsd2ss
-.string "%RX1,%RX2:0:0xf2 :0:0x0f 0x5a 0xc0|R|s "
+.string "%RX1,%RX2:0xf2 :0:0x0f 0x5a 0xc0|R|s "
 # cvtsi2ss
-.string "%RL1,%RX2:0:0xf3 :0:0x0f 0x2a 0xc0|R|s "
-.string "%RQ1,%RX2:0:0xf3 :1:0x0f 0x2a 0xc0|R|s "
+.string "%RL1,%RX2:0xf3 :0:0x0f 0x2a 0xc0|R|s "
+.string "%RQ1,%RX2:0xf3 :1:0x0f 0x2a 0xc0|R|s "
 # cvtsi2sd
-.string "%RL1,%RX2:0:0xf2 :0:0x0f 0x2a 0xc0|R|s "
-.string "%RQ1,%RX2:0:0xf2 :1:0x0f 0x2a 0xc0|R|s "
+.string "%RL1,%RX2:0xf2 :0:0x0f 0x2a 0xc0|R|s "
+.string "%RQ1,%RX2:0xf2 :1:0x0f 0x2a 0xc0|R|s "
 # cvtss2si
-.string "%RX1,%RL2:0:0xf3 :0:0x0f 0x2d 0xc0|R|s "
-.string "%RX1,%RQ2:0:0xf3 :1:0x0f 0x2d 0xc0|R|s "
+.string "%RX1,%RL2:0xf3 :0:0x0f 0x2d 0xc0|R|s "
+.string "%RX1,%RQ2:0xf3 :1:0x0f 0x2d 0xc0|R|s "
 # cvtsd2si
-.string "%RX1,%RL2:0:0xf2 :0:0x0f 0x2d 0xc0|R|s "
-.string "%RX1,%RQ2:0:0xf2 :1:0x0f 0x2d 0xc0|R|s "
+.string "%RX1,%RL2:0xf2 :0:0x0f 0x2d 0xc0|R|s "
+.string "%RX1,%RQ2:0xf2 :1:0x0f 0x2d 0xc0|R|s "
 
 .byte 0
 
@@ -847,7 +851,7 @@
 .long 1
 .long 1
 .long 1
-.long 16
+.long 18
 # movq
 .long 3
 # movw
@@ -2257,6 +2261,10 @@ push %r12
 sub $48,%rsp
 mov %rcx,%r12
 mov %dl,32(%rsp)
+cmpq $0xffffffff80000000,8(%rcx)
+jl @inserr
+cmpq $0x7fffffff,8(%rcx)
+jg @inserr
 testb $1,30(%r12)
 je @assemble_write_address_near
 mov (%r12),%al
@@ -2268,7 +2276,7 @@ je @assemble_write_address_X3
 @assemble_write_address_X2
 orb $0x40,32(%rsp)
 @assemble_write_address_X3
-cmpq $0xfffffffffffffff0,8(%r12)
+cmpq $0xffffffffffffff80,8(%r12)
 jl @assemble_write_address_X1
 cmpq $0x7f,8(%r12)
 jle @assemble_write_address_near
@@ -2377,32 +2385,6 @@ push %r13
 sub $56,%rsp
 mov %rcx,%r12
 mov %rdx,%r13
-cmpb $'1',(%r12)
-jne @assemble_write_ins_not_optimize
-mov 16(%r13),%rax
-add $0x80,%rax
-cmp $0xff,%rax
-jbe @assemble_write_ins_not_optimize
-mov $1,%eax
-add $56,%rsp
-pop %r13
-pop %r12
-ret
-@assemble_write_ins_not_optimize
-cmpb $'2',(%r12)
-jne @assemble_write_ins_not_optimize2
-mov 16(%r13),%rax
-sub @_$DATA+120,%rax
-sub $0x400000-0x70,%rax
-cmp $0xe0,%rax
-jbe @assemble_write_ins_not_optimize2
-mov $1,%eax
-add $56,%rsp
-pop %r13
-pop %r12
-ret
-@assemble_write_ins_not_optimize2
-add $2,%r12
 @assemble_write_ins_prefix_loop
 cmpb $':',(%r12)
 je @assemble_write_ins_prefix_loop_end
@@ -2513,14 +2495,34 @@ jmp @assemble_write_opcode_loop
 @assemble_write_opcode_A
 cmpb $'i',(%r12)
 jne @assemble_write_opcode_i
+cmpq $0xff,16(%r13)
+jg @assemble_write_opcode_err_cleanup
+cmpq $0xffffffffffffff80,16(%r13)
+jl @assemble_write_opcode_err_cleanup
 lea 16(%r13),%rcx
 mov $1,%edx
 call @emit_code
 add $2,%r12
 jmp @assemble_write_opcode_loop
 @assemble_write_opcode_i
+cmpb $'I',(%r12)
+jne @assemble_write_opcode_I
+cmpq $0x7f,16(%r13)
+jg @assemble_write_opcode_err_cleanup
+cmpq $0xffffffffffffff80,16(%r13)
+jl @assemble_write_opcode_err_cleanup
+lea 16(%r13),%rcx
+mov $1,%edx
+call @emit_code
+add $2,%r12
+jmp @assemble_write_opcode_loop
+@assemble_write_opcode_I
 cmpb $'j',(%r12)
 jne @assemble_write_opcode_j
+cmpq $0xffff,16(%r13)
+jg @assemble_write_opcode_err_cleanup
+cmpq $0xffffffffffff8000,16(%r13)
+jl @assemble_write_opcode_err_cleanup
 lea 16(%r13),%rcx
 mov $2,%edx
 call @emit_code
@@ -2529,12 +2531,28 @@ jmp @assemble_write_opcode_loop
 @assemble_write_opcode_j
 cmpb $'k',(%r12)
 jne @assemble_write_opcode_k
+cmpl $0x0,20(%r13)
+jg @assemble_write_opcode_err_cleanup
+cmpq $0xffffffff80000000,16(%r13)
+jl @assemble_write_opcode_err_cleanup
 lea 16(%r13),%rcx
 mov $4,%edx
 call @emit_code
 add $2,%r12
 jmp @assemble_write_opcode_loop
 @assemble_write_opcode_k
+cmpb $'K',(%r12)
+jne @assemble_write_opcode_K
+cmpq $0x7fffffff,16(%r13)
+jg @assemble_write_opcode_err_cleanup
+cmpq $0xffffffff80000000,16(%r13)
+jl @assemble_write_opcode_err_cleanup
+lea 16(%r13),%rcx
+mov $4,%edx
+call @emit_code
+add $2,%r12
+jmp @assemble_write_opcode_loop
+@assemble_write_opcode_K
 cmpb $'l',(%r12)
 jne @assemble_write_opcode_l
 lea 16(%r13),%rcx
@@ -2556,6 +2574,10 @@ mov (%rcx),%rdx
 sub %rdx,%rax
 sub @_$DATA+120,%rax
 sub $0x400000+4,%rax
+cmp $0xffffffff80000000,%rax
+jl @assemble_write_opcode_err_cleanup
+cmp $0x7fffffff,%rax
+jg @assemble_write_opcode_err_cleanup
 mov %rax,40(%rsp)
 lea 40(%rsp),%rcx
 mov $4,%edx
@@ -2576,6 +2598,10 @@ mov (%rcx),%rdx
 sub %rdx,%rax
 sub @_$DATA+120,%rax
 sub $0x400000+1,%rax
+cmp $0xffffffffffffff80,%rax
+jl @assemble_write_opcode_err_cleanup
+cmp $0x7f,%rax
+jg @assemble_write_opcode_err_cleanup
 mov %rax,40(%rsp)
 lea 40(%rsp),%rcx
 mov $1,%edx
@@ -2586,6 +2612,16 @@ jmp @assemble_write_opcode_loop
 
 @assemble_write_opcode_loop_end
 xor %eax,%eax
+add $56,%rsp
+pop %r13
+pop %r12
+ret
+@assemble_write_opcode_err_cleanup
+mov @_$DATA+32,%rax
+mov 24(%rax),%rcx
+movq $0,24(%rax)
+.dllcall "msvcrt.dll" "free"
+mov $1,%eax
 add $56,%rsp
 pop %r13
 pop %r12
