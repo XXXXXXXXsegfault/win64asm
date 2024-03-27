@@ -3381,7 +3381,7 @@ mov @_$DATA+80,%eax
 test %eax,%eax
 je @image_write_header_nordata
 incw (%rsi)
-mov $0x61746164722e,%rax
+mov $0x61746164692e,%rax
 mov %rax,(%rcx)
 mov @_$DATA+80,%eax
 mov %eax,16(%rcx)
