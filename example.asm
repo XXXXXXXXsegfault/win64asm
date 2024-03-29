@@ -41,7 +41,7 @@ sub $32,%rsp
 mov $0x7f00,%edx
 mov %ebx,%ecx
 .dllcall "user32.dll" "LoadIconA"
-mov %rax,48(%rsp)
+mov %rax,64(%rsp)
 
 mov $0x7f00,%edx
 mov %ebx,%ecx
@@ -56,8 +56,7 @@ movq $@WName,64(%rsp)
 mov %rbx,72(%rsp)
 
 mov %rsp,%rcx
-sub $24,%rsp
-push %rcx
+sub $32,%rsp
 .dllcall "user32.dll" "RegisterClassExA"
 add $32,%rsp
 test %rax,%rax
