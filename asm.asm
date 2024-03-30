@@ -705,38 +705,47 @@ push %r12
 push %r13
 push %r14
 push %r15
-sub $40,%rsp
+sub $56,%rsp
 mov %rcx,%r12
 mov %rdx,%r13
 xor %r14d,%r14d
 mov (%rcx),%rax
 mov %rax,32(%rsp)
+movq $0,40(%rsp)
 @string_array_get_index_loop
 mov %r13,%rcx
 .dllcall "msvcrt.dll" "strlen"
 test %rax,%rax
-je @string_array_get_index_loop_err
+je @string_array_get_index_loop_end2
 mov %rax,%r15
 mov %rax,%r8
 mov (%r12),%rcx
 mov %r13,%rdx
 .dllcall "msvcrt.dll" "strncmp"
 test %rax,%rax
-je @string_array_get_index_loop_success
+jne @string_array_get_index_loop_continue
+cmp %r15d,40(%rsp)
+jg @string_array_get_index_loop_continue
+mov %r15d,40(%rsp)
+mov %r14d,44(%rsp)
+@string_array_get_index_loop_continue
 inc %r14d
 add %r15,%r13
 inc %r13
 jmp @string_array_get_index_loop
+@string_array_get_index_loop_end2
+cmpl $0,40(%rsp)
+je @string_array_get_index_loop_err
+mov 40(%rsp),%eax
+add %rax,(%r12)
+mov 44(%rsp),%eax
+jmp @string_array_get_index_loop_end
 @string_array_get_index_loop_err
 mov 32(%rsp),%rax
 mov %rax,(%r12)
 mov $0xffffffff,%eax
-jmp @string_array_get_index_loop_end
-@string_array_get_index_loop_success
-mov %r14d,%eax
-add %r15,(%r12)
 @string_array_get_index_loop_end
-add $40,%rsp
+add $56,%rsp
 pop %r15
 pop %r14
 pop %r13
@@ -1538,6 +1547,7 @@ jne @assemble_write_opcode_O
 mov 16(%r13),%rax
 xor %edx,%edx
 mov @_$DATA+32,%rcx
+orb $1,8(%rcx)
 mov 24(%rcx),%rcx
 test %rcx,%rcx
 je @assemble_write_opcode_O_X1
@@ -1562,6 +1572,7 @@ jne @assemble_write_opcode_o
 mov 16(%r13),%rax
 xor %edx,%edx
 mov @_$DATA+32,%rcx
+orb $1,8(%rcx)
 mov 24(%rcx),%rcx
 test %rcx,%rcx
 je @assemble_write_opcode_o_X1
@@ -2670,12 +2681,12 @@ ret
 .string "Address map file (Optional): "
 
 @fmode_r
-.string "rb"
+.string "r"
 @fmode_w
 .string "wb"
 
 @debug_format
-.string "%.16llx: %s\n"
+.string "%.16llx: %s\r\n"
 
 @pseudo_dllcall
 .string ".dllcall"
@@ -2814,165 +2825,165 @@ ret
 .byte 0
 
 @ins_list
-.string "pushq "
-.string "push "
-.string "popq "
-.string "pop "
-.string "mov "
-.string "movq "
-.string "movl "
-.string "movw "
-.string "movb "
-.string "movd "
-.string "jmp "
-.string "call "
+.string "pushq"
+.string "push"
+.string "popq"
+.string "pop"
+.string "mov"
+.string "movq"
+.string "movl"
+.string "movw"
+.string "movb"
+.string "movd"
+.string "jmp"
+.string "call"
 .string "ret"
 .string "int3"
-.string "je "
-.string "jne "
-.string "ja "
-.string "jae "
-.string "jb "
-.string "jbe "
+.string "je"
+.string "jne"
+.string "ja"
+.string "jae"
+.string "jb"
+.string "jbe"
 .string "jg "
-.string "jge "
-.string "jl "
-.string "jle "
-.string "cmp "
-.string "cmpq "
-.string "cmpl "
-.string "cmpw "
-.string "cmpb "
-.string "add "
-.string "addq "
-.string "addl "
-.string "addw "
-.string "addb "
-.string "sub "
-.string "subq "
-.string "subl "
-.string "subw "
-.string "subb "
-.string "and "
-.string "andq "
-.string "andl "
-.string "andw "
-.string "andb "
-.string "or "
-.string "orq "
-.string "orl "
-.string "orw "
-.string "orb "
-.string "xor "
-.string "xorq "
-.string "xorl "
-.string "xorw "
-.string "xorb "
-.string "test "
-.string "testq "
-.string "testl "
-.string "testw "
-.string "testb "
-.string "inc "
-.string "incq "
-.string "incl "
-.string "incw "
-.string "incb "
-.string "dec "
-.string "decq "
-.string "decl "
-.string "decw "
-.string "decb "
-.string "mul "
-.string "mulq "
-.string "mull "
-.string "mulw "
-.string "mulb "
-.string "imul "
-.string "imulq "
-.string "imull "
-.string "imulw "
-.string "imulb "
-.string "div "
-.string "divq "
-.string "divl "
-.string "divw "
-.string "divb "
-.string "idiv "
-.string "idivq "
-.string "idivl "
-.string "idivw "
-.string "idivb "
-.string "not "
-.string "notq "
-.string "notl "
-.string "notw "
-.string "notb "
+.string "jge"
+.string "jl"
+.string "jle"
+.string "cmp"
+.string "cmpq"
+.string "cmpl"
+.string "cmpw"
+.string "cmpb"
+.string "add"
+.string "addq"
+.string "addl"
+.string "addw"
+.string "addb"
+.string "sub"
+.string "subq"
+.string "subl"
+.string "subw"
+.string "subb"
+.string "and"
+.string "andq"
+.string "andl"
+.string "andw"
+.string "andb"
+.string "or"
+.string "orq"
+.string "orl"
+.string "orw"
+.string "orb"
+.string "xor"
+.string "xorq"
+.string "xorl"
+.string "xorw"
+.string "xorb"
+.string "test"
+.string "testq"
+.string "testl"
+.string "testw"
+.string "testb"
+.string "inc"
+.string "incq"
+.string "incl"
+.string "incw"
+.string "incb"
+.string "dec"
+.string "decq"
+.string "decl"
+.string "decw"
+.string "decb"
+.string "mul"
+.string "mulq"
+.string "mull"
+.string "mulw"
+.string "mulb"
+.string "imul"
+.string "imulq"
+.string "imull"
+.string "imulw"
+.string "imulb"
+.string "div"
+.string "divq"
+.string "divl"
+.string "divw"
+.string "divb"
+.string "idiv"
+.string "idivq"
+.string "idivl"
+.string "idivw"
+.string "idivb"
+.string "not"
+.string "notq"
+.string "notl"
+.string "notw"
+.string "notb"
 .string "neg "
-.string "negq "
-.string "negl "
-.string "negw "
-.string "negb "
-.string "shl "
-.string "shlq "
-.string "shll "
-.string "shlw "
-.string "shlb "
-.string "shr "
-.string "shrq "
-.string "shrl "
-.string "shrw "
-.string "shrb "
-.string "sar "
-.string "sarq "
-.string "sarl "
-.string "sarw "
-.string "sarb "
+.string "negq"
+.string "negl"
+.string "negw"
+.string "negb"
+.string "shl"
+.string "shlq"
+.string "shll"
+.string "shlw"
+.string "shlb"
+.string "shr"
+.string "shrq"
+.string "shrl"
+.string "shrw"
+.string "shrb"
+.string "sar"
+.string "sarq"
+.string "sarl"
+.string "sarw"
+.string "sarb"
 .string "xchg "
-.string "lea "
-.string "movzbw "
-.string "movzbl "
-.string "movzbq "
-.string "movzwl "
-.string "movzwq "
-.string "movsbw "
-.string "movsbl "
-.string "movsbq "
-.string "movswl "
-.string "movswq "
-.string "movslq "
-.string "movups "
-.string "movss "
-.string "movsd "
-.string "addss "
-.string "addsd "
-.string "subss "
-.string "subsd "
-.string "mulss "
-.string "mulsd "
-.string "divss "
-.string "divsd "
-.string "comiss "
-.string "comisd "
-.string "addps "
-.string "addpd "
-.string "subps "
-.string "subpd "
-.string "mulps "
-.string "mulpd "
-.string "divps "
-.string "divpd "
-.string "shufps "
-.string "cvtss2sd "
-.string "cvtsd2ss "
-.string "cvtsi2ss "
-.string "cvtsi2sd "
-.string "cvtss2si "
-.string "cvtsd2si "
+.string "lea"
+.string "movzbw"
+.string "movzbl"
+.string "movzbq"
+.string "movzwl"
+.string "movzwq"
+.string "movsbw"
+.string "movsbl"
+.string "movsbq"
+.string "movswl"
+.string "movswq"
+.string "movslq"
+.string "movups"
+.string "movss"
+.string "movsd"
+.string "addss"
+.string "addsd"
+.string "subss"
+.string "subsd"
+.string "mulss"
+.string "mulsd"
+.string "divss"
+.string "divsd"
+.string "comiss"
+.string "comisd"
+.string "addps"
+.string "addpd"
+.string "subps"
+.string "subpd"
+.string "mulps"
+.string "mulpd"
+.string "divps"
+.string "divpd"
+.string "shufps"
+.string "cvtss2sd"
+.string "cvtsd2ss"
+.string "cvtsi2ss"
+.string "cvtsi2sd"
+.string "cvtss2si"
+.string "cvtsd2si"
 .byte 0
 
 # meaning of instruction format
-# TEXTFORMAT:OPTIMIZE:PREFIXES:REX:ENCODING
+# TEXTFORMAT:PREFIXES:REX:ENCODING
 # ENCODING can be:
 # a number
 # i -- IMM8
@@ -3735,7 +3746,7 @@ ret
 .quad 0x400000,0x1000,0x100000,0x1000
 .long 0,16
 @peheader_end
-.datasize 16384
+.datasize 12288
 # 0 -- fpi
 # 8 -- fpo
 # 16 -- line list head
