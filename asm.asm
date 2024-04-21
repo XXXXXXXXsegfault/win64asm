@@ -1007,8 +1007,12 @@ mov %rax,32(%rsi)
 call @read_cstring
 mov @_$DATA+32,%rsi
 mov %rax,40(%rsi)
+movb $1,8(%rsi)
 mov $@dllcall_emit,%rcx
-mov $7,%edx
+mov $2,%edx
+call @emit_code
+mov $@_$DATA+120,%rcx
+mov $4,%edx
 call @emit_code
 jmp @pseudo_end
 @pseudo_not_dllcall
@@ -2459,9 +2463,10 @@ mov 40(%r12),%rdx
 add $8,%rdx
 call @get_dll_function_offset
 add @_$DATA+88,%eax
-add $0x400000,%eax
 mov 24(%r12),%rcx
-mov %eax,9(%rcx)
+sub 10(%rcx),%eax
+sub $6,%eax
+mov %eax,10(%rcx)
 @image_write_text_no_dll
 mov 24(%r12),%rsi
 test %rsi,%rsi
@@ -3724,7 +3729,7 @@ ret
 .long 2
 
 @dllcall_emit
-.byte 0xb8,0x00,0x00,0x00,0x00,0xff,0x10
+.byte 0xff,0x15
 
 @mzdosheader
 .quad 0x0000000300905a4d,0x0000ffff00000004
