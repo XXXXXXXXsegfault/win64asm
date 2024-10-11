@@ -2228,7 +2228,7 @@ incl @_$DATA+28
 mov 32(%r12),%rcx
 add $8,%rcx
 .dllcall "msvcrt.dll" "strlen"
-add $3,%eax
+inc %eax
 add %eax,@_$DATA+52
 @init_dlls_initialized1
 mov 40(%r12),%rcx
@@ -2251,7 +2251,8 @@ incl @_$DATA+48
 mov 40(%r12),%rcx
 add $8,%rcx
 .dllcall "msvcrt.dll" "strlen"
-add $3,%eax
+add $4,%eax
+and $0xfc,%al
 add %eax,@_$DATA+52
 @init_dlls_initialized2
 @init_dlls_nodll
@@ -2544,8 +2545,13 @@ call @image_fill_zeros
 mov 40(%r12),%rcx
 mov (%rcx),%rdx
 add $8,%rcx
-inc %rdx
 call @write_image
+mov 40(%r12),%rcx
+mov (%rcx),%rcx
+inc %ecx
+and $1,%ecx
+inc %ecx
+call @image_fill_zeros
 @image_write_rdata_dllwritten
 
 @image_write_rdata_nodll
@@ -2564,7 +2570,6 @@ mov @_$DATA+64,%rcx
 mov (%rcx),%rdx
 sub %r14,%rdx
 add @_$DATA+88,%rdx
-add $2,%rdx
 add @_$DATA+88,%rax
 mov @_$DATA+28,%esi
 add @_$DATA+48,%esi
@@ -2579,8 +2584,6 @@ shr $1,%esi
 add %esi,%eax
 mov %eax,(%rdi)
 add $20,%r13d
-mov $2,%ecx
-call @image_fill_zeros
 mov 8(%r12),%rcx
 mov (%rcx),%rdx
 add $8,%rcx
