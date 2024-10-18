@@ -1,37 +1,37 @@
 .cui
 .entry
 sub $40,%rsp
-mov $@msg_infile,%rcx
-mov $@fmode_r,%rdx
+lea @msg_infile-@_$NEXT(%rip),%rcx
+lea @fmode_r-@_$NEXT(%rip),%rdx
 call @request_file
 test %rax,%rax
 je @openfailure
-mov %rax,@_$DATA+0
-mov $@msg_outfile,%rcx
-mov $@fmode_w,%rdx
+mov %rax,@_$DATA+0-@_$NEXT(%rip)
+lea @msg_outfile-@_$NEXT(%rip),%rcx
+lea @fmode_w-@_$NEXT(%rip),%rdx
 call @request_file
 test %rax,%rax
 je @openfailure
-mov %rax,@_$DATA+8
-mov $@msg_debugfile,%rcx
-mov $@fmode_w,%rdx
+mov %rax,@_$DATA+8-@_$NEXT(%rip)
+lea @msg_debugfile-@_$NEXT(%rip),%rcx
+lea @fmode_w-@_$NEXT(%rip),%rdx
 call @request_file
-mov %rax,@_$DATA+128
+mov %rax,@_$DATA+128-@_$NEXT(%rip)
 
 call @load_file
 
-movq $0x1000,@_$DATA+40
+movq $0x1000,@_$DATA+40-@_$NEXT(%rip)
 
 call @assemble_all
 call @init_dlls
 call @calculate_sizes
 
-movb $1,@_$DATA+24
+movb $1,@_$DATA+24-@_$NEXT(%rip)
 @main_loop
-movb $0,@_$DATA+26
+movb $0,@_$DATA+26-@_$NEXT(%rip)
 call @assemble_all
 call @calculate_sizes
-cmpb $0,@_$DATA+26
+cmpb $0,@_$DATA+26-@_$NEXT(%rip)
 jne @main_loop
 
 call @image_write_header
@@ -40,33 +40,33 @@ call @image_write_rdata
 
 call @image_calculate_checksum
 
-mov @_$DATA+64,%rcx
+mov @_$DATA+64-@_$NEXT(%rip),%rcx
 mov %eax,224(%rcx)
 
-mov @_$DATA+64,%rcx
+mov @_$DATA+64-@_$NEXT(%rip),%rcx
 mov (%rcx),%rdx
 add $8,%rcx
 mov $1,%r8d
-mov @_$DATA+8,%r9
+mov @_$DATA+8-@_$NEXT(%rip),%r9
 .dllcall "msvcrt.dll" "fwrite"
-mov @_$DATA+0,%rcx
+mov @_$DATA+0-@_$NEXT(%rip),%rcx
 .dllcall "msvcrt.dll" "fclose"
-mov @_$DATA+8,%rcx
+mov @_$DATA+8-@_$NEXT(%rip),%rcx
 .dllcall "msvcrt.dll" "fclose"
-mov @_$DATA+128,%rcx
+mov @_$DATA+128-@_$NEXT(%rip),%rcx
 test %rcx,%rcx
 je @no_debugfile
 call @write_debugfile
-mov @_$DATA+128,%rcx
+mov @_$DATA+128-@_$NEXT(%rip),%rcx
 .dllcall "msvcrt.dll" "fclose"
 @no_debugfile
-mov $@msg_success,%rcx
+lea @msg_success-@_$NEXT(%rip),%rcx
 .dllcall "msvcrt.dll" "printf"
 call @exit
 
 @exit
 sub $40,%rsp
-mov $@exit_msg,%rcx
+lea @exit_msg-@_$NEXT(%rip),%rcx
 .dllcall "msvcrt.dll" "puts"
 .dllcall "msvcrt.dll" "_getch"
 xor %ecx,%ecx
@@ -74,7 +74,7 @@ xor %ecx,%ecx
 
 @error
 sub $40,%rsp
-mov @_$DATA+32,%rdx
+mov @_$DATA+32-@_$NEXT(%rip),%rdx
 test %rdx,%rdx
 je @error_noline
 mov 48(%rdx),%rdx
@@ -83,13 +83,13 @@ mov 48(%rdx),%rdx
 call @exit
 
 @nomem
-mov $@err_nomem,%rcx
+lea @err_nomem-@_$NEXT(%rip),%rcx
 call @error
 @openfailure
-mov $@err_openfailure,%rcx
+lea @err_openfailure-@_$NEXT(%rip),%rcx
 call @error
 @inserr
-mov $@err_inserr,%rcx
+lea @err_inserr-@_$NEXT(%rip),%rcx
 call @error
 
 # string structure
@@ -202,7 +202,8 @@ ret
 # 32:8 -- DLL name (pointer to string structure)
 # 40:8 -- DLL function name (pointer to string structure)
 # 48:8 -- line number
-# 56:72 -- reserved for future use
+# 56:8 -- original machine code length
+# 64:72 -- reserved for future use
 
 @load_line
 push %r12
@@ -214,7 +215,7 @@ test %rax,%rax
 je @nomem
 mov %rax,%r12
 @load_line_loop
-mov @_$DATA+0,%rcx
+mov @_$DATA+0-@_$NEXT(%rip),%rcx
 .dllcall "msvcrt.dll" "fgetc"
 cmp $-1,%eax
 je @load_line_end
@@ -258,7 +259,7 @@ je @load_file_first
 mov %rax,(%r12)
 jmp @load_file_cond_end
 @load_file_first
-mov %rax,@_$DATA+16
+mov %rax,@_$DATA+16-@_$NEXT(%rip)
 @load_file_cond_end
 mov %rax,%r12
 jmp @load_file_loop
@@ -444,7 +445,7 @@ jmp @read_char_end
 @read_char_X7
 cmpb $'x',(%rdx)
 je @read_char_noerror
-mov $@err_badchar,%rcx
+lea @err_badchar-@_$NEXT(%rip),%rcx
 call @error
 @read_char_noerror
 xor %esi,%esi
@@ -461,7 +462,7 @@ jmp @read_char_loop
 mov %esi,%eax
 cmp $256,%eax
 jb @read_char_end
-mov $@err_badchar,%rcx
+lea @err_badchar-@_$NEXT(%rip),%rcx
 call @error
 @read_char_end
 mov %rdx,(%rcx)
@@ -475,7 +476,7 @@ add $40,%rsp
 ret
 
 @notstring
-mov $@err_notstring,%rcx
+lea @err_notstring-@_$NEXT(%rip),%rcx
 call @error
 
 @read_cstring
@@ -555,7 +556,7 @@ movzbl %al,%eax
 mov (%r12),%rcx
 cmpb $'\'',(%rcx)
 je @read_number_char_noerror
-mov $@err_badchar,%rcx
+lea @err_badchar-@_$NEXT(%rip),%rcx
 call @error
 @read_number_char_noerror
 incq (%r12)
@@ -607,17 +608,56 @@ mov (%rcx),%r13
 call @read_number
 cmp %r13,(%r12)
 jne @read_single_constant_end
+# data segment
 mov %r12,%rcx
-mov $@dataseg_str,%rdx
+lea @dataseg_str-@_$NEXT(%rip),%rdx
+mov (%rcx),%r13
+call @read_str
+cmp %r13,(%r12)
+je @read_single_constant_image
+mov @_$DATA+32-@_$NEXT(%rip),%rax
+orb $1,8(%rax)
+mov @_$DATA+96-@_$NEXT(%rip),%rax
+add $0x400000,%rax
+jmp @read_single_constant_end
+# image base
+@read_single_constant_image
+mov %r12,%rcx
+lea @imagebase_str-@_$NEXT(%rip),%rdx
+mov (%rcx),%r13
+call @read_str
+cmp %r13,(%r12)
+je @read_single_constant_cur
+mov $0x400000,%eax
+jmp @read_single_constant_end
+# current address
+@read_single_constant_cur
+mov %r12,%rcx
+lea @curaddr_str-@_$NEXT(%rip),%rdx
+mov (%rcx),%r13
+call @read_str
+cmp %r13,(%r12)
+je @read_single_constant_next
+mov @_$DATA+32-@_$NEXT(%rip),%rax
+orb $1,8(%rax)
+mov @_$DATA+120-@_$NEXT(%rip),%rax
+add $0x400000,%rax
+jmp @read_single_constant_end
+# next address
+@read_single_constant_next
+mov %r12,%rcx
+lea @nextaddr_str-@_$NEXT(%rip),%rdx
 mov (%rcx),%r13
 call @read_str
 cmp %r13,(%r12)
 je @read_single_constant_label
-mov @_$DATA+32,%rax
+mov @_$DATA+32-@_$NEXT(%rip),%rax
 orb $1,8(%rax)
-mov @_$DATA+96,%rax
+mov 56(%rax),%rax
+add @_$DATA+120-@_$NEXT(%rip),%rax
 add $0x400000,%rax
 jmp @read_single_constant_end
+# label
 @read_single_constant_label
 mov (%r12),%rcx
 cmpb $'@',(%rcx)
@@ -754,7 +794,7 @@ ret
 
 @get_reg8
 sub $40,%rsp
-mov $@reg8,%rdx
+lea @reg8-@_$NEXT(%rip),%rdx
 call @string_array_get_index
 cmp $8,%eax
 jge @get_reg8_X1
@@ -772,14 +812,14 @@ ret
 
 @get_reg16
 sub $40,%rsp
-mov $@reg16,%rdx
+lea @reg16-@_$NEXT(%rip),%rdx
 call @string_array_get_index
 add $40,%rsp
 ret
 
 @get_reg32
 sub $40,%rsp
-mov $@reg32,%rdx
+lea @reg32-@_$NEXT(%rip),%rdx
 call @string_array_get_index
 cmp $16,%eax
 jl @get_reg32_end
@@ -790,7 +830,7 @@ ret
 
 @get_reg64
 sub $40,%rsp
-mov $@reg64,%rdx
+lea @reg64-@_$NEXT(%rip),%rdx
 call @string_array_get_index
 cmp $16,%eax
 jl @get_reg64_end
@@ -801,7 +841,7 @@ ret
 
 @get_regxmm
 sub $40,%rsp
-mov $@regxmm,%rdx
+lea @regxmm-@_$NEXT(%rip),%rdx
 call @string_array_get_index
 cmp $0,%eax
 jl @get_regxmm_end2
@@ -917,10 +957,10 @@ mov %rdx,%r13
 xor %r14d,%r14d
 @emit_loop
 mov (%r12,%r14,1),%dl
-mov @_$DATA+32,%rcx
+mov @_$DATA+32-@_$NEXT(%rip),%rcx
 mov 24(%rcx),%rcx
 call @string_append_ch
-mov @_$DATA+32,%rcx
+mov @_$DATA+32-@_$NEXT(%rip),%rcx
 mov %rax,24(%rcx)
 inc %r14
 dec %r13
@@ -938,10 +978,10 @@ sub $32,%rsp
 mov %rcx,%r13
 @emit_zero_loop
 mov $0,%dl
-mov @_$DATA+32,%rcx
+mov @_$DATA+32-@_$NEXT(%rip),%rcx
 mov 24(%rcx),%rcx
 call @string_append_ch
-mov @_$DATA+32,%rcx
+mov @_$DATA+32-@_$NEXT(%rip),%rcx
 mov %rax,24(%rcx)
 dec %r13
 jne @emit_zero_loop
@@ -952,13 +992,13 @@ ret
 @pad_image
 sub $40,%rsp
 @emit_loop3
-mov @_$DATA+64,%rcx
+mov @_$DATA+64-@_$NEXT(%rip),%rcx
 testw $0x1ff,(%rcx)
 je @emit_loop3_end
 mov $0,%dl
-mov @_$DATA+64,%rcx
+mov @_$DATA+64-@_$NEXT(%rip),%rcx
 call @string_append_ch
-mov %rax,@_$DATA+64
+mov %rax,@_$DATA+64-@_$NEXT(%rip)
 jmp @emit_loop3
 @emit_loop3_end
 add $40,%rsp
@@ -976,9 +1016,9 @@ mov %rdx,%r13
 xor %r14d,%r14d
 @emit_loop4
 mov (%r12,%r14,1),%dl
-mov @_$DATA+64,%rcx
+mov @_$DATA+64-@_$NEXT(%rip),%rcx
 call @string_append_ch
-mov %rax,@_$DATA+64
+mov %rax,@_$DATA+64-@_$NEXT(%rip)
 inc %r14
 dec %r13
 jne @emit_loop4
@@ -992,33 +1032,33 @@ ret
 @handle_pseudo_op
 push %r12
 sub $48,%rsp
-mov @_$DATA+32,%rax
+mov @_$DATA+32-@_$NEXT(%rip),%rax
 mov 16(%rax),%r12
 add $8,%r12
 lea 32(%rsp),%rcx
 mov %r12,(%rcx)
-mov $@pseudo_dllcall,%rdx
+lea @pseudo_dllcall-@_$NEXT(%rip),%rdx
 call @read_str
 cmp %r12,32(%rsp)
 je @pseudo_not_dllcall
 call @read_cstring
-mov @_$DATA+32,%rsi
+mov @_$DATA+32-@_$NEXT(%rip),%rsi
 mov %rax,32(%rsi)
 call @read_cstring
-mov @_$DATA+32,%rsi
+mov @_$DATA+32-@_$NEXT(%rip),%rsi
 mov %rax,40(%rsi)
 movb $1,8(%rsi)
-mov $@dllcall_emit,%rcx
+lea @dllcall_emit-@_$NEXT(%rip),%rcx
 mov $2,%edx
 call @emit_code
-mov $@_$DATA+120,%rcx
+lea @_$DATA+120-@_$NEXT(%rip),%rcx
 mov $4,%edx
 call @emit_code
 jmp @pseudo_end
 @pseudo_not_dllcall
 
 lea 32(%rsp),%rcx
-mov $@pseudo_byte,%rdx
+lea @pseudo_byte-@_$NEXT(%rip),%rdx
 call @read_str
 cmp %r12,32(%rsp)
 je @pseudo_not_byte
@@ -1044,7 +1084,7 @@ jmp @pseudo_byte_loop
 @pseudo_not_byte
 
 lea 32(%rsp),%rcx
-mov $@pseudo_word,%rdx
+lea @pseudo_word-@_$NEXT(%rip),%rdx
 call @read_str
 cmp %r12,32(%rsp)
 je @pseudo_not_word
@@ -1070,7 +1110,7 @@ jmp @pseudo_word_loop
 @pseudo_not_word
 
 lea 32(%rsp),%rcx
-mov $@pseudo_long,%rdx
+lea @pseudo_long-@_$NEXT(%rip),%rdx
 call @read_str
 cmp %r12,32(%rsp)
 je @pseudo_not_long
@@ -1096,7 +1136,7 @@ jmp @pseudo_long_loop
 @pseudo_not_long
 
 lea 32(%rsp),%rcx
-mov $@pseudo_quad,%rdx
+lea @pseudo_quad-@_$NEXT(%rip),%rdx
 call @read_str
 cmp %r12,32(%rsp)
 je @pseudo_not_quad
@@ -1122,7 +1162,7 @@ jmp @pseudo_quad_loop
 @pseudo_not_quad
 
 lea 32(%rsp),%rcx
-mov $@pseudo_string,%rdx
+lea @pseudo_string-@_$NEXT(%rip),%rdx
 call @read_str
 cmp %r12,32(%rsp)
 je @pseudo_not_string
@@ -1140,23 +1180,23 @@ jmp @pseudo_end
 @pseudo_not_string
 
 lea 32(%rsp),%rcx
-mov $@pseudo_entry,%rdx
+lea @pseudo_entry-@_$NEXT(%rip),%rdx
 call @read_str
 cmp %r12,32(%rsp)
 je @pseudo_not_entry
-mov @_$DATA+120,%rax
-mov %rax,@_$DATA+40
-mov @_$DATA+32,%rax
+mov @_$DATA+120-@_$NEXT(%rip),%rax
+mov %rax,@_$DATA+40-@_$NEXT(%rip)
+mov @_$DATA+32-@_$NEXT(%rip),%rax
 orb $1,8(%rax)
 jmp @pseudo_end
 @pseudo_not_entry
 
 lea 32(%rsp),%rcx
-mov $@pseudo_align,%rdx
+lea @pseudo_align-@_$NEXT(%rip),%rdx
 call @read_str
 cmp %r12,32(%rsp)
 je @pseudo_not_align
-mov @_$DATA+32,%rax
+mov @_$DATA+32-@_$NEXT(%rip),%rax
 orb $1,8(%rax)
 lea 32(%rsp),%rcx
 call @skip_spaces
@@ -1165,14 +1205,14 @@ mov (%rcx),%cl
 sub $'1',%cl
 cmp $7,%cl
 jbe @align_noerr
-mov $@err_badalign,%rcx
+lea @err_badalign-@_$NEXT(%rip),%rcx
 call @error
 @align_noerr
 inc %cl
 mov $1,%eax
 shl %cl,%eax
 dec %eax
-mov @_$DATA+120,%rcx
+mov @_$DATA+120-@_$NEXT(%rip),%rcx
 and %eax,%ecx
 je @pseudo_end
 sub %ecx,%eax
@@ -1182,7 +1222,7 @@ jmp @pseudo_end
 @pseudo_not_align
 
 lea 32(%rsp),%rcx
-mov $@pseudo_datasize,%rdx
+lea @pseudo_datasize-@_$NEXT(%rip),%rdx
 call @read_str
 cmp %r12,32(%rsp)
 je @pseudo_not_datasize
@@ -1193,23 +1233,23 @@ mov (%rcx),%r12
 call @read_number
 cmp %r12,(%rcx)
 jne @datasize_noerror
-mov $@err_datasize,%rcx
+lea @err_datasize-@_$NEXT(%rip),%rcx
 call @error
 @datasize_noerror
-mov %rax,@_$DATA+56
+mov %rax,@_$DATA+56-@_$NEXT(%rip)
 jmp @pseudo_end
 @pseudo_not_datasize
 
 lea 32(%rsp),%rcx
-mov $@pseudo_cui,%rdx
+lea @pseudo_cui-@_$NEXT(%rip),%rdx
 call @read_str
 cmp %r12,32(%rsp)
 je @pseudo_not_cui
-movb $1,@_$DATA+25
+movb $1,@_$DATA+25-@_$NEXT(%rip)
 jmp @pseudo_end
 @pseudo_not_cui
 
-mov $@err_badpseudoop,%rcx
+lea @err_badpseudoop-@_$NEXT(%rip),%rcx
 call @error
 @pseudo_end
 add $48,%rsp
@@ -1250,6 +1290,8 @@ cmpq $0xffffffff80000000,8(%rcx)
 jl @inserr
 cmpq $0x7fffffff,8(%rcx)
 jg @inserr
+cmpw $24,(%r12)
+je @assemble_write_address_rip
 testb $1,30(%r12)
 je @assemble_write_address_near
 mov (%r12),%al
@@ -1272,8 +1314,7 @@ testb $2,30(%r12)
 jne @assemble_write_address_index
 testb $1,30(%r12)
 je @assemble_write_address_noreg
-cmpw $24,(%r12)
-je @assemble_write_address_rip
+
 mov (%r12),%al
 and $7,%al
 or %al,32(%rsp)
@@ -1310,6 +1351,10 @@ mov $4,%edx
 call @emit_code
 jmp @assemble_write_address_end
 @assemble_write_address_rip
+testb $2,30(%r12)
+jne @inserr
+testb $1,30(%r12)
+je @inserr
 orb $5,32(%rsp)
 lea 32(%rsp),%rcx
 mov $1,%edx
@@ -1550,7 +1595,7 @@ cmpb $'O',(%r12)
 jne @assemble_write_opcode_O
 mov 16(%r13),%rax
 xor %edx,%edx
-mov @_$DATA+32,%rcx
+mov @_$DATA+32-@_$NEXT(%rip),%rcx
 orb $1,8(%rcx)
 mov 24(%rcx),%rcx
 test %rcx,%rcx
@@ -1558,7 +1603,7 @@ je @assemble_write_opcode_O_X1
 mov (%rcx),%rdx
 @assemble_write_opcode_O_X1
 sub %rdx,%rax
-sub @_$DATA+120,%rax
+sub @_$DATA+120-@_$NEXT(%rip),%rax
 sub $0x400000+4,%rax
 cmp $0xffffffff80000000,%rax
 jl @assemble_write_opcode_err_cleanup
@@ -1575,7 +1620,7 @@ cmpb $'o',(%r12)
 jne @assemble_write_opcode_o
 mov 16(%r13),%rax
 xor %edx,%edx
-mov @_$DATA+32,%rcx
+mov @_$DATA+32-@_$NEXT(%rip),%rcx
 orb $1,8(%rcx)
 mov 24(%rcx),%rcx
 test %rcx,%rcx
@@ -1583,7 +1628,7 @@ je @assemble_write_opcode_o_X1
 mov (%rcx),%rdx
 @assemble_write_opcode_o_X1
 sub %rdx,%rax
-sub @_$DATA+120,%rax
+sub @_$DATA+120-@_$NEXT(%rip),%rax
 sub $0x400000+1,%rax
 cmp $0xffffffffffffff80,%rax
 jl @assemble_write_opcode_err_cleanup
@@ -1604,7 +1649,7 @@ pop %r13
 pop %r12
 ret
 @assemble_write_opcode_err_cleanup
-mov @_$DATA+32,%rax
+mov @_$DATA+32-@_$NEXT(%rip),%rax
 mov 24(%rax),%rcx
 movq $0,24(%rax)
 .dllcall "msvcrt.dll" "free"
@@ -1635,7 +1680,7 @@ cmpb $':',(%r13)
 je @assemble_ins2_loop1_end
 lea 80(%rsp),%rcx
 mov %r13,(%rcx)
-mov $@ins_format,%rdx
+lea @ins_format-@_$NEXT(%rip),%rdx
 call @string_array_get_index
 mov 80(%rsp),%r13
 cmp $0,%eax
@@ -1835,10 +1880,11 @@ shl $2,%edx
 test %edx,%edx
 je @assemble_ins1_loop1_end
 sub $4,%edx
-add @ins_offsets(%rdx),%ecx
+lea @ins_offsets-@_$NEXT(%rip),%rax
+add (%rax,%rdx,1),%ecx
 jmp @assemble_ins1_loop1
 @assemble_ins1_loop1_end
-mov $@ins_operands,%rax
+lea @ins_operands-@_$NEXT(%rip),%rax
 @assemble_ins1_loop2
 test %ecx,%ecx
 je @assemble_ins1_loop2_end
@@ -1851,7 +1897,8 @@ jmp @assemble_ins1_loop2
 @assemble_ins1_loop2_end
 mov %rax,%r15
 shl $2,%r13
-mov @ins_offsets(%r13),%r14d
+lea @ins_offsets-@_$NEXT(%rip),%rax
+mov (%rax,%r13,1),%r14d
 @assemble_ins1_loop3
 mov %r15,%rdx
 mov %r12,%rcx
@@ -1877,14 +1924,14 @@ ret
 @assemble_ins
 push %r12
 sub $48,%rsp
-mov @_$DATA+32,%rax
+mov @_$DATA+32-@_$NEXT(%rip),%rax
 mov 16(%rax),%r12
 add $8,%r12
 lea 32(%rsp),%rcx
 mov %r12,(%rcx)
 call @skip_spaces
 lea 32(%rsp),%rcx
-mov $@ins_list,%rdx
+lea @ins_list-@_$NEXT(%rip),%rdx
 call @string_array_get_index
 cmp $0,%eax
 jl @inserr
@@ -1898,16 +1945,16 @@ ret
 @assemble_line
 push %r12
 sub $48,%rsp
-cmpb $0,@_$DATA+24
+cmpb $0,@_$DATA+24-@_$NEXT(%rip)
 je @assemble_line_first_compile
-mov @_$DATA+32,%rax
+mov @_$DATA+32-@_$NEXT(%rip),%rax
 testb $1,8(%rax)
 je @assemble_line_end
 mov 24(%rax),%rcx
 movq $0,24(%rax)
 .dllcall "msvcrt.dll" "free"
 @assemble_line_first_compile
-mov @_$DATA+32,%rax
+mov @_$DATA+32-@_$NEXT(%rip),%rax
 mov 16(%rax),%r12
 add $8,%r12
 lea 32(%rsp),%rcx
@@ -1926,13 +1973,20 @@ jmp @assemble_line_end
 cmpb $'@',(%r12)
 jne @assemble_line_not_label
 lea 1(%r12),%rcx
-mov @_$DATA+120,%rdx
+mov @_$DATA+120-@_$NEXT(%rip),%rdx
 add $0x400000,%rdx
 call @label_string_htab_set
 jmp @assemble_line_end
 @assemble_line_not_label
 call @assemble_ins
 @assemble_line_end
+mov @_$DATA+32-@_$NEXT(%rip),%rcx
+mov 24(%rcx),%rax
+test %rax,%rax
+je @assemble_line_has_code
+mov (%rax),%rax
+@assemble_line_has_code
+mov %rax,56(%rcx)
 add $48,%rsp
 pop %r12
 ret
@@ -1940,13 +1994,13 @@ ret
 @assemble_all
 push %r12
 sub $32,%rsp
-mov @_$DATA+16,%r12
-movq $0x1000,@_$DATA+120
-movb $0,@_$DATA+26
+mov @_$DATA+16-@_$NEXT(%rip),%r12
+movq $0x1000,@_$DATA+120-@_$NEXT(%rip)
+movb $0,@_$DATA+26-@_$NEXT(%rip)
 @assemble_all_loop
 test %r12,%r12
 je @assemble_all_end
-mov %r12,@_$DATA+32
+mov %r12,@_$DATA+32-@_$NEXT(%rip)
 cmpq $0,16(%r12)
 je @assemble_all_empty_line
 call @assemble_line
@@ -1955,7 +2009,7 @@ mov 24(%r12),%rcx
 test %rcx,%rcx
 je @assemble_all_empty
 mov (%rcx),%rcx
-add %rcx,@_$DATA+120
+add %rcx,@_$DATA+120-@_$NEXT(%rip)
 @assemble_all_empty
 mov (%r12),%r12
 jmp @assemble_all_loop
@@ -2025,7 +2079,8 @@ sub $40,%rsp
 mov %rcx,%r12
 call @label_string_hash
 shl $3,%rax
-mov @_$DATA+8192(%rax),%r13
+lea @_$DATA+8192-@_$NEXT(%rip),%r13
+mov (%rax,%r13,1),%r13
 @label_string_htab_get_loop
 test %r13,%r13
 je @label_string_htab_get_end
@@ -2056,12 +2111,12 @@ jmp @label_string_htab_get_loop
 mov %r13,%rax
 test %rax,%rax
 jne @label_string_htab_found
-cmpb $0,@_$DATA+24
+cmpb $0,@_$DATA+24-@_$NEXT(%rip)
 je @label_string_htab_found
-mov $@err_undefined,%rcx
+lea @err_undefined-@_$NEXT(%rip),%rcx
 call @error
 @label_string_htab_found
-mov @_$DATA+32,%rcx
+mov @_$DATA+32-@_$NEXT(%rip),%rcx
 orb $1,8(%rcx)
 add $40,%rsp
 pop %r13
@@ -2083,11 +2138,11 @@ je @label_string_htab_new
 cmp %r13,16(%rax)
 je @label_string_htab_nochange
 mov %r13,16(%rax)
-movb $1,@_$DATA+26
+movb $1,@_$DATA+26-@_$NEXT(%rip)
 @label_string_htab_nochange
-cmpb $0,@_$DATA+24
+cmpb $0,@_$DATA+24-@_$NEXT(%rip)
 jne @label_string_htab_end
-mov $@err_redefined,%rcx
+lea @err_redefined-@_$NEXT(%rip),%rcx
 call @error
 @label_string_htab_new
 mov $32,%ecx
@@ -2102,9 +2157,11 @@ mov %r13,16(%r15)
 mov %r12,%rcx
 call @label_string_hash
 shl $3,%rax
-mov @_$DATA+8192(%rax),%rcx
+lea @_$DATA+8192-@_$NEXT(%rip),%rcx
+add %rcx,%rax
+mov (%rax),%rcx
 mov %rcx,(%r15)
-mov %r15,@_$DATA+8192(%rax)
+mov %r15,(%rax)
 @label_string_htab_end
 add $32,%rsp
 pop %r15
@@ -2127,7 +2184,8 @@ sub $40,%rsp
 mov %rcx,%r12
 call @string_hash
 shl $3,%rax
-mov @_$DATA+4096(%rax),%r13
+lea @_$DATA+4096-@_$NEXT(%rip),%r13
+mov (%rax,%r13,1),%r13
 @dll_string_htab_get_loop
 test %r13,%r13
 je @dll_string_htab_get_end
@@ -2180,19 +2238,21 @@ mov %r14,24(%r15)
 mov %r12,%rcx
 call @string_hash
 shl $3,%rax
-mov @_$DATA+4096(%rax),%rcx
+lea @_$DATA+4096-@_$NEXT(%rip),%rcx
+add %rcx,%rax
+mov (%rax),%rcx
 mov %rcx,(%r15)
-mov %r15,@_$DATA+4096(%rax)
+mov %r15,(%rax)
 cmpb $0,32(%rsp)
 jne @dll_string_htab_funname
-mov @_$DATA+104,%rax
+mov @_$DATA+104-@_$NEXT(%rip),%rax
 mov %rax,32(%r15)
-mov %r15,@_$DATA+104
+mov %r15,@_$DATA+104-@_$NEXT(%rip)
 jmp @dll_string_htab_end
 @dll_string_htab_funname
-mov @_$DATA+112,%rax
+mov @_$DATA+112-@_$NEXT(%rip),%rax
 mov %rax,32(%r15)
-mov %r15,@_$DATA+112
+mov %r15,@_$DATA+112-@_$NEXT(%rip)
 @dll_string_htab_end
 add $40,%rsp
 pop %r15
@@ -2205,7 +2265,7 @@ ret
 push %r12
 push %r13
 sub $40,%rsp
-mov @_$DATA+16,%r12
+mov @_$DATA+16-@_$NEXT(%rip),%r12
 xor %r13d,%r13d
 @init_dlls_loop
 test %r12,%r12
@@ -2224,12 +2284,12 @@ mov 32(%r12),%rcx
 add $8,%rcx
 xor %r9d,%r9d
 call @dll_string_htab_set
-incl @_$DATA+28
+incl @_$DATA+28-@_$NEXT(%rip)
 mov 32(%r12),%rcx
 add $8,%rcx
 .dllcall "msvcrt.dll" "strlen"
 inc %eax
-add %eax,@_$DATA+52
+add %eax,@_$DATA+52-@_$NEXT(%rip)
 @init_dlls_initialized1
 mov 40(%r12),%rcx
 add $8,%rcx
@@ -2247,13 +2307,13 @@ mov 40(%r12),%rcx
 add $8,%rcx
 mov $1,%r9d
 call @dll_string_htab_set
-incl @_$DATA+48
+incl @_$DATA+48-@_$NEXT(%rip)
 mov 40(%r12),%rcx
 add $8,%rcx
 .dllcall "msvcrt.dll" "strlen"
 add $4,%eax
-and $0xfc,%al
-add %eax,@_$DATA+52
+and $0xfe,%al
+add %eax,@_$DATA+52-@_$NEXT(%rip)
 @init_dlls_initialized2
 @init_dlls_nodll
 mov (%r12),%r12
@@ -2266,7 +2326,7 @@ ret
 
 @calculate_text_segment_size
 xor %eax,%eax
-mov @_$DATA+16,%rcx
+mov @_$DATA+16-@_$NEXT(%rip),%rcx
 @calculate_text_segment_size_loop
 test %rcx,%rcx
 je @calculate_text_segment_size_end
@@ -2280,73 +2340,73 @@ jmp @calculate_text_segment_size_loop
 @calculate_text_segment_size_end
 add $511,%rax
 and $0xfe00,%ax
-mov %rax,@_$DATA+72
+mov %rax,@_$DATA+72-@_$NEXT(%rip)
 ret
 
 @calculate_rdata_segment_size
-mov @_$DATA+28,%eax
+mov @_$DATA+28-@_$NEXT(%rip),%eax
 lea (%rax,%rax,8),%eax
-mov @_$DATA+48,%ecx
+mov @_$DATA+48-@_$NEXT(%rip),%ecx
 shl $2,%ecx
 add %ecx,%eax
 shl $2,%eax
 add $20+511,%eax
-add @_$DATA+52,%eax
+add @_$DATA+52-@_$NEXT(%rip),%eax
 and $0xfe00,%ax
-mov %rax,@_$DATA+80
+mov %rax,@_$DATA+80-@_$NEXT(%rip)
 ret
 
 @calculate_sizes
-pushq @_$DATA+96
+pushq @_$DATA+96-@_$NEXT(%rip)
 call @calculate_text_segment_size
 call @calculate_rdata_segment_size
-mov @_$DATA+72,%rax
+mov @_$DATA+72-@_$NEXT(%rip),%rax
 add $8191,%rax
 and $0xf000,%ax
-mov %rax,@_$DATA+88
-add @_$DATA+80,%rax
+mov %rax,@_$DATA+88-@_$NEXT(%rip)
+add @_$DATA+80-@_$NEXT(%rip),%rax
 add $4095,%rax
 and $0xf000,%ax
-mov %rax,@_$DATA+96
+mov %rax,@_$DATA+96-@_$NEXT(%rip)
 pop %rcx
 cmp %rcx,%rax
 je @calculate_sizes_end
-movb $1,@_$DATA+26
+movb $1,@_$DATA+26-@_$NEXT(%rip)
 @calculate_sizes_end
 ret
 
 @image_write_header
 sub $40,%rsp
-mov $@mzdosheader,%rcx
+lea @mzdosheader-@_$NEXT(%rip),%rcx
 mov $128,%edx
 call @write_image
-mov $@peheader,%rcx
+lea @peheader-@_$NEXT(%rip),%rcx
 mov $@peheader_end-@peheader,%edx
 call @write_image
 call @pad_image
-mov @_$DATA+64,%rcx
-mov @_$DATA+88,%eax
+mov @_$DATA+64-@_$NEXT(%rip),%rcx
+mov @_$DATA+88-@_$NEXT(%rip),%eax
 sub $4096,%eax
 mov %eax,164(%rcx)
-mov @_$DATA+56,%eax
+mov @_$DATA+56-@_$NEXT(%rip),%eax
 add $4095,%eax
 and $0xf000,%ax
 mov %eax,172(%rcx)
-add @_$DATA+96,%eax
+add @_$DATA+96-@_$NEXT(%rip),%eax
 mov %eax,216(%rcx)
-mov @_$DATA+40,%eax
+mov @_$DATA+40-@_$NEXT(%rip),%eax
 mov %eax,176(%rcx)
 movl $0x1000,180(%rcx)
-cmpb $0,@_$DATA+25
+cmpb $0,@_$DATA+25-@_$NEXT(%rip)
 je @image_write_header_gui
 movw $3,228(%rcx)
 @image_write_header_gui
-mov @_$DATA+28,%eax
-add @_$DATA+48,%eax
+mov @_$DATA+28-@_$NEXT(%rip),%eax
+add @_$DATA+48-@_$NEXT(%rip),%eax
 shl $4,%eax
-add @_$DATA+88,%eax
+add @_$DATA+88-@_$NEXT(%rip),%eax
 mov %eax,280(%rcx)
-mov @_$DATA+28,%eax
+mov @_$DATA+28-@_$NEXT(%rip),%eax
 lea (%rax,%rax,4),%eax
 shl $2,%eax
 add $20,%eax
@@ -2356,7 +2416,7 @@ mov %eax,284(%rcx)
 add $400,%rcx
 mov $0x747865742e,%rax
 mov %rax,(%rcx)
-mov @_$DATA+72,%eax
+mov @_$DATA+72-@_$NEXT(%rip),%eax
 mov %eax,16(%rcx)
 add $4095,%eax
 and $0xf000,%ax
@@ -2365,36 +2425,36 @@ movl $0x1000,12(%rcx)
 movl $0x200,20(%rcx)
 movl $0x60000020,36(%rcx)
 add $40,%rcx
-mov @_$DATA+80,%eax
+mov @_$DATA+80-@_$NEXT(%rip),%eax
 test %eax,%eax
 je @image_write_header_nordata
 incw (%rsi)
 mov $0x61746164692e,%rax
 mov %rax,(%rcx)
-mov @_$DATA+80,%eax
+mov @_$DATA+80-@_$NEXT(%rip),%eax
 mov %eax,16(%rcx)
 add $4095,%eax
 and $0xf000,%ax
 mov %eax,8(%rcx)
-mov @_$DATA+88,%eax
+mov @_$DATA+88-@_$NEXT(%rip),%eax
 mov %eax,12(%rcx)
-mov @_$DATA+72,%eax
+mov @_$DATA+72-@_$NEXT(%rip),%eax
 add $0x200,%eax
 mov %eax,20(%rcx)
 movl $0xc0000040,36(%rcx)
 add $40,%rcx
 @image_write_header_nordata
-mov @_$DATA+56,%eax
+mov @_$DATA+56-@_$NEXT(%rip),%eax
 test %eax,%eax
 je @image_write_header_nobss
 incw (%rsi)
 mov $0x7373622e,%eax
 mov %eax,(%rcx)
-mov @_$DATA+56,%eax
+mov @_$DATA+56-@_$NEXT(%rip),%eax
 add $4095,%eax
 and $0xf000,%ax
 mov %eax,8(%rcx)
-mov @_$DATA+96,%eax
+mov @_$DATA+96-@_$NEXT(%rip),%eax
 mov %eax,12(%rcx)
 movl $0xc0000080,36(%rcx)
 @image_write_header_nobss
@@ -2452,7 +2512,7 @@ ret
 @image_write_text
 push %r12
 sub $32,%rsp
-mov @_$DATA+16,%r12
+mov @_$DATA+16-@_$NEXT(%rip),%r12
 @image_write_text_loop
 test %r12,%r12
 je @image_write_text_end
@@ -2463,7 +2523,7 @@ add $8,%rcx
 mov 40(%r12),%rdx
 add $8,%rdx
 call @get_dll_function_offset
-add @_$DATA+88,%eax
+add @_$DATA+88-@_$NEXT(%rip),%eax
 mov 24(%r12),%rcx
 sub 10(%rcx),%eax
 sub $6,%eax
@@ -2490,10 +2550,10 @@ push %r12
 sub $32,%rsp
 mov %rcx,%r12
 @image_fill_zeros_loop
-mov @_$DATA+64,%rcx
+mov @_$DATA+64-@_$NEXT(%rip),%rcx
 mov $0,%dl
 call @string_append_ch
-mov %rax,@_$DATA+64
+mov %rax,@_$DATA+64-@_$NEXT(%rip)
 dec %r12
 jne @image_fill_zeros_loop
 add $32,%rsp
@@ -2505,17 +2565,17 @@ push %r12
 push %r13
 push %r14
 sub $32,%rsp
-mov @_$DATA+64,%rax
+mov @_$DATA+64-@_$NEXT(%rip),%rax
 mov (%rax),%r14
-mov @_$DATA+28,%eax
+mov @_$DATA+28-@_$NEXT(%rip),%eax
 lea (%rax,%rax,8),%eax
 shl $2,%eax
-mov @_$DATA+48,%ecx
+mov @_$DATA+48-@_$NEXT(%rip),%ecx
 shl $4,%ecx
 add %eax,%ecx
 add $20,%ecx
 call @image_fill_zeros
-mov @_$DATA+16,%r12
+mov @_$DATA+16-@_$NEXT(%rip),%r12
 @image_write_rdata_loop1
 test %r12,%r12
 je @image_write_rdata_end1
@@ -2527,16 +2587,16 @@ add $8,%rcx
 add $8,%rdx
 call @get_dll_function_offset
 add %r14,%rax
-mov @_$DATA+64,%rcx
+mov @_$DATA+64-@_$NEXT(%rip),%rcx
 mov (%rcx),%rdx
 sub %r14,%rdx
-add @_$DATA+88,%rdx
+add @_$DATA+88-@_$NEXT(%rip),%rdx
 mov 8(%rcx,%rax,1),%rsi
 test %rsi,%rsi
 jne @image_write_rdata_dllwritten
 mov %rdx,8(%rcx,%rax,1)
-mov @_$DATA+28,%esi
-add @_$DATA+48,%esi
+mov @_$DATA+28-@_$NEXT(%rip),%esi
+add @_$DATA+48-@_$NEXT(%rip),%esi
 shl $3,%esi
 add %rsi,%rax
 mov %rdx,8(%rcx,%rax,1)
@@ -2558,7 +2618,7 @@ call @image_fill_zeros
 mov (%r12),%r12
 jmp @image_write_rdata_loop1
 @image_write_rdata_end1
-mov @_$DATA+104,%r12
+mov @_$DATA+104-@_$NEXT(%rip),%r12
 xor %r13d,%r13d
 @image_write_rdata_loop2
 test %r12,%r12
@@ -2566,16 +2626,16 @@ je @image_write_rdata_end2
 mov 8(%r12),%rcx
 add $8,%rcx
 call @get_dll_offset
-mov @_$DATA+64,%rcx
+mov @_$DATA+64-@_$NEXT(%rip),%rcx
 mov (%rcx),%rdx
 sub %r14,%rdx
-add @_$DATA+88,%rdx
-add @_$DATA+88,%rax
-mov @_$DATA+28,%esi
-add @_$DATA+48,%esi
+add @_$DATA+88-@_$NEXT(%rip),%rdx
+add @_$DATA+88-@_$NEXT(%rip),%rax
+mov @_$DATA+28-@_$NEXT(%rip),%esi
+add @_$DATA+48-@_$NEXT(%rip),%esi
 shl $4,%esi
 lea 8(%rsi),%rdi
-add @_$DATA+64,%rdi
+add @_$DATA+64-@_$NEXT(%rip),%rdi
 add %r14,%rdi
 add %r13,%rdi
 mov %eax,16(%rdi)
@@ -2601,7 +2661,7 @@ ret
 
 @image_calculate_checksum
 xor %eax,%eax
-mov @_$DATA+64,%rcx
+mov @_$DATA+64-@_$NEXT(%rip),%rcx
 mov (%rcx),%rdx
 add $8,%rcx
 mov %edx,%esi
@@ -2627,7 +2687,7 @@ push %r13
 push %r14
 sub $32,%rsp
 mov %rcx,%r13
-mov @_$DATA+16,%r12
+mov @_$DATA+16-@_$NEXT(%rip),%r12
 mov $0x401000,%r14d
 @write_debugfile_loop
 test %r12,%r12
@@ -2636,7 +2696,7 @@ mov 16(%r12),%rax
 test %rax,%rax
 je @write_debugfile_empty
 lea 8(%rax),%r9
-mov $@debug_format,%rdx
+lea @debug_format-@_$NEXT(%rip),%rdx
 mov %r14,%r8
 mov %r13,%rcx
 .dllcall "msvcrt.dll" "fprintf"
@@ -2719,6 +2779,12 @@ ret
 
 @dataseg_str
 .string "@_$DATA"
+@imagebase_str
+.string "@_$IMAGE"
+@curaddr_str
+.string "@_$CUR"
+@nextaddr_str
+.string "@_$NEXT"
 
 @reg8
 .string "al"
@@ -3750,7 +3816,7 @@ ret
 .long 0,0,0,0
 .long 0x400000,0,0x1000,0x200
 .long 0x4,0,0x20005,0
-.long 0,0x200,0,0x2
+.long 0,0x200,0,0x00400002
 .quad 0x400000,0x1000,0x100000,0x1000
 .long 0,16
 @peheader_end

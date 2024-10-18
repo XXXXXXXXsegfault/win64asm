@@ -1,6 +1,3 @@
-@WName
-.string "Window Test"
-
 @WndProc
 push %rbp
 mov %rsp,%rbp
@@ -31,10 +28,12 @@ sub $80,%rsp
 xor %ebx,%ebx
 
 movq $80,(%rsp)
-movq $@WndProc,8(%rsp)
+lea @WndProc-@_$NEXT(%rip),%rax
+mov %rax,8(%rsp)
 mov %rbx,16(%rsp)
-# The ImageBase is 0x400000 when using this assembler
-movq $0x400000,24(%rsp)
+
+lea @_$IMAGE-@_$NEXT(%rip),%rax
+mov %rax,24(%rsp)
 
 sub $32,%rsp
 
@@ -52,7 +51,8 @@ mov %rax,40(%rsp)
 
 movq $8,48(%rsp)
 mov %rbx,56(%rsp)
-movq $@WName,64(%rsp)
+lea @WName-@_$NEXT(%rip),%rax
+mov %rax,64(%rsp)
 mov %rbx,72(%rsp)
 
 mov %rsp,%rcx
@@ -63,7 +63,8 @@ test %rax,%rax
 je @Err_Exit
 
 push %rbx
-pushq $0x400000
+lea @_$IMAGE-@_$NEXT(%rip),%rax
+push %rax
 push %rbx
 push %rbx
 pushq $480
@@ -71,8 +72,8 @@ pushq $640
 push %rbx
 push %rbx
 mov $0x10c80000,%r9d
-mov $@WName,%r8d
-mov $@WName,%edx
+lea @WName-@_$NEXT(%rip),%rdx
+mov %rdx,%r8
 mov $0x100,%ecx
 sub $32,%rsp
 .dllcall "user32.dll" "CreateWindowExA"
@@ -98,6 +99,9 @@ xor %eax,%eax
 mov %rbp,%rsp
 pop %rbp
 ret
+
+@WName
+.string "Window Test"
 
 # This program has no global variables.
 .datasize 0

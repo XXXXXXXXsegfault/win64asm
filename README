@@ -6,8 +6,21 @@ All labels start with '@'. For example:
 @infinite_loop
 jmp @infinite_loop
 
+'@_$CUR' refers to the address of the start of the current instruction. For example:
+# infinite loop
+jmp @_$CUR
+
+'@_$NEXT' refers to the address of the end of the current instruction. For example:
+# RIP-relative addressing
+lea @message-@_$NEXT(%rip),%rcx
+
 '@_$DATA' refers to the address of the data segment. For example:
-mov @_$DATA+40,%eax
+# access the data segment
+mov @_$DATA+40-@_$NEXT(%rip),%eax
+
+'@_$IMAGE' refers to the address of the image base. For example:
+# obtain the image base
+lea @_$IMAGE-@_$NEXT(%rip),%rax
 
 Supported pseudo-ops are:
 .entry -- specify the program entry
